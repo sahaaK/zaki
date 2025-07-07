@@ -1,0 +1,992 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zaki Architect | Futuristic Engineering Courses</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/ScrollTrigger.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700;900&display=swap');
+        
+        :root {
+            --primary-dark: #0a0a0a;
+            --primary-yellow: #FFD700;
+            --glass-dark: rgba(10, 10, 10, 0.7);
+            --glass-yellow: rgba(255, 215, 0, 0.2);
+        }
+        
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background-color: var(--primary-dark);
+            color: white;
+            overflow-x: hidden;
+        }
+        
+        .glass-dark {
+            background: var(--glass-dark);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .glass-yellow {
+            background: var(--glass-yellow);
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 215, 0, 0.3);
+        }
+        
+        .text-yellow {
+            color: var(--primary-yellow);
+        }
+        
+        .bg-yellow {
+            background-color: var(--primary-yellow);
+        }
+        
+        .border-yellow {
+            border-color: var(--primary-yellow);
+        }
+        
+        .parallax {
+            background-attachment: fixed;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-size: cover;
+        }
+        
+        .skewed {
+            transform: skewY(-3deg);
+        }
+        
+        .unskewed {
+            transform: skewY(3deg);
+        }
+        
+        .hover-scale {
+            transition: transform 0.3s ease;
+        }
+        
+        .hover-scale:hover {
+            transform: scale(1.05);
+        }
+        
+        .course-card {
+            perspective: 1000px;
+        }
+        
+        .course-inner {
+            transition: transform 0.8s;
+            transform-style: preserve-3d;
+        }
+        
+        .course-card:hover .course-inner {
+            transform: rotateY(180deg);
+        }
+        
+        .course-front, .course-back {
+            backface-visibility: hidden;
+        }
+        
+        .course-back {
+            transform: rotateY(180deg);
+        }
+        
+        .floating {
+            animation: floating 3s ease-in-out infinite;
+        }
+        
+        @keyframes floating {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-15px); }
+            100% { transform: translateY(0px); }
+        }
+        
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(255, 215, 0, 0.7); }
+            70% { box-shadow: 0 0 0 15px rgba(255, 215, 0, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(255, 215, 0, 0); }
+        }
+        
+        .typing {
+            overflow: hidden;
+            border-right: 3px solid var(--primary-yellow);
+            white-space: nowrap;
+            animation: typing 3.5s steps(40, end), blink-caret 0.75s step-end infinite;
+        }
+        
+        @keyframes typing {
+            from { width: 0 }
+            to { width: 100% }
+        }
+        
+        @keyframes blink-caret {
+            from, to { border-color: transparent }
+            50% { border-color: var(--primary-yellow); }
+        }
+        
+        .grid-pattern {
+            background-image: 
+                linear-gradient(rgba(255, 215, 0, 0.1) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 215, 0, 0.1) 1px, transparent 1px);
+            background-size: 30px 30px;
+        }
+    </style>
+</head>
+<body class="relative">
+    <!-- Preloader -->
+    <div id="preloader" class="fixed inset-0 bg-black z-50 flex items-center justify-center">
+        <div class="text-center">
+            <div class="w-20 h-20 border-4 border-yellow border-t-transparent rounded-full animate-spin mx-auto"></div>
+            <h2 class="text-yellow text-2xl mt-4 font-bold">ZAKI ARCHITECT</h2>
+            <p class="text-white mt-2">Building futures through design</p>
+        </div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="glass-dark fixed w-full z-40 py-4 px-6 shadow-lg">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center">
+                <div class="w-10 h-10 bg-yellow rounded-full flex items-center justify-center mr-3">
+                    <i class="fas fa-drafting-compass text-black text-xl"></i>
+                </div>
+                <h1 class="text-2xl font-bold text-yellow">ZAKI<span class="text-white">ARCHITECT</span></h1>
+            </div>
+            
+            <div class="hidden md:flex space-x-8">
+                <a href="#home" class="text-white hover:text-yellow transition duration-300">Home</a>
+                <a href="#courses" class="text-white hover:text-yellow transition duration-300">Courses</a>
+                <a href="#about" class="text-white hover:text-yellow transition duration-300">About</a>
+                <a href="#testimonials" class="text-white hover:text-yellow transition duration-300">Testimonials</a>
+                <a href="#contact" class="text-white hover:text-yellow transition duration-300">Contact</a>
+            </div>
+            
+            <div class="flex items-center space-x-4">
+                <button class="bg-yellow text-black px-4 py-2 rounded-full font-semibold hover:bg-opacity-90 transition duration-300 hidden md:block">
+                    Sign In
+                </button>
+                <button id="menu-toggle" class="md:hidden text-white focus:outline-none">
+                    <i class="fas fa-bars text-2xl"></i>
+                </button>
+            </div>
+        </div>
+        
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="md:hidden hidden glass-dark absolute top-full left-0 w-full py-4 px-6 shadow-lg">
+            <div class="flex flex-col space-y-4">
+                <a href="#home" class="text-white hover:text-yellow transition duration-300">Home</a>
+                <a href="#courses" class="text-white hover:text-yellow transition duration-300">Courses</a>
+                <a href="#about" class="text-white hover:text-yellow transition duration-300">About</a>
+                <a href="#testimonials" class="text-white hover:text-yellow transition duration-300">Testimonials</a>
+                <a href="#contact" class="text-white hover:text-yellow transition duration-300">Contact</a>
+                <button class="bg-yellow text-black px-4 py-2 rounded-full font-semibold hover:bg-opacity-90 transition duration-300 w-full">
+                    Sign In
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="home" class="min-h-screen flex items-center justify-center relative overflow-hidden parallax" style="background-image: url('https://images.unsplash.com/photo-1487958449943-2429e8be8625?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80');">
+        <div class="absolute inset-0 bg-black bg-opacity-60"></div>
+        <div class="container mx-auto px-6 relative z-10 text-center">
+            <div class="glass-dark rounded-2xl p-8 md:p-12 inline-block max-w-4xl">
+                <h1 class="text-4xl md:text-6xl font-bold mb-6 typing">
+                    <span class="text-yellow">DESIGN</span> YOUR FUTURE
+                </h1>
+                <p class="text-lg md:text-xl mb-8 text-gray-300">
+                    Master architectural engineering with Zaki's cutting-edge online courses. 
+                    Learn from industry experts and transform your creative vision into reality.
+                </p>
+                <div class="flex flex-col md:flex-row justify-center space-y-4 md:space-y-0 md:space-x-6">
+                    <button class="bg-yellow text-black px-8 py-4 rounded-full font-bold text-lg hover:bg-opacity-90 transition duration-300 hover-scale">
+                        Explore Courses
+                    </button>
+                    <button class="glass-yellow border border-yellow px-8 py-4 rounded-full font-bold text-lg hover:bg-opacity-30 transition duration-300 hover-scale">
+                        Watch Demo
+                    </button>
+                </div>
+            </div>
+            
+            <div class="mt-16 grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto">
+                <div class="glass-dark p-4 rounded-xl text-center hover-scale">
+                    <i class="fas fa-users text-yellow text-3xl mb-2"></i>
+                    <h3 class="font-bold">10,000+</h3>
+                    <p class="text-sm text-gray-300">Students</p>
+                </div>
+                <div class="glass-dark p-4 rounded-xl text-center hover-scale">
+                    <i class="fas fa-certificate text-yellow text-3xl mb-2"></i>
+                    <h3 class="font-bold">50+</h3>
+                    <p class="text-sm text-gray-300">Courses</p>
+                </div>
+                <div class="glass-dark p-4 rounded-xl text-center hover-scale">
+                    <i class="fas fa-chalkboard-teacher text-yellow text-3xl mb-2"></i>
+                    <h3 class="font-bold">25+</h3>
+                    <p class="text-sm text-gray-300">Instructors</p>
+                </div>
+                <div class="glass-dark p-4 rounded-xl text-center hover-scale">
+                    <i class="fas fa-globe text-yellow text-3xl mb-2"></i>
+                    <h3 class="font-bold">100+</h3>
+                    <p class="text-sm text-gray-300">Countries</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="absolute bottom-10 left-0 right-0 flex justify-center">
+            <a href="#courses" class="text-white animate-bounce">
+                <i class="fas fa-chevron-down text-2xl"></i>
+            </a>
+        </div>
+    </section>
+
+    <!-- Featured Courses -->
+    <section id="courses" class="py-20 relative overflow-hidden">
+        <div class="absolute inset-0 grid-pattern"></div>
+        <div class="container mx-auto px-6 relative">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl md:text-5xl font-bold mb-4">
+                    <span class="text-yellow">FEATURED</span> COURSES
+                </h2>
+                <p class="text-gray-400 max-w-2xl mx-auto">
+                    Explore our most popular architectural engineering courses designed to take your skills to the next level.
+                </p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Course 1 -->
+                <div class="course-card">
+                    <div class="course-inner h-full">
+                        <div class="course-front glass-dark rounded-2xl overflow-hidden h-full hover-scale">
+                            <div class="relative">
+                                <img src="https://images.unsplash.com/photo-1487958449943-2429e8be8625?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80" alt="Modern Architecture" class="w-full h-48 object-cover">
+                                <div class="absolute top-4 right-4 bg-yellow text-black px-3 py-1 rounded-full text-sm font-bold">
+                                    BESTSELLER
+                                </div>
+                            </div>
+                            <div class="p-6">
+                                <div class="flex justify-between items-start mb-2">
+                                    <h3 class="text-xl font-bold">Modern Architectural Design</h3>
+                                    <div class="flex items-center text-yellow">
+                                        <i class="fas fa-star"></i>
+                                        <span class="ml-1">4.9</span>
+                                    </div>
+                                </div>
+                                <p class="text-gray-400 text-sm mb-4">
+                                    Master the principles of contemporary architectural design with real-world projects.
+                                </p>
+                                <div class="flex justify-between items-center">
+                                    <div class="flex items-center text-sm text-gray-400">
+                                        <i class="far fa-clock mr-1"></i>
+                                        <span>32 hours</span>
+                                    </div>
+                                    <div class="text-yellow font-bold">
+                                        $199
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="course-back glass-dark rounded-2xl p-6 absolute top-0 left-0 w-full h-full flex flex-col justify-between">
+                            <div>
+                                <h3 class="text-xl font-bold mb-4">Modern Architectural Design</h3>
+                                <p class="text-sm mb-4">What you'll learn:</p>
+                                <ul class="text-sm space-y-2 mb-6">
+                                    <li class="flex items-center">
+                                        <i class="fas fa-check text-yellow mr-2"></i>
+                                        Contemporary design principles
+                                    </li>
+                                    <li class="flex items-center">
+                                        <i class="fas fa-check text-yellow mr-2"></i>
+                                        Sustainable materials
+                                    </li>
+                                    <li class="flex items-center">
+                                        <i class="fas fa-check text-yellow mr-2"></i>
+                                        Digital modeling techniques
+                                    </li>
+                                    <li class="flex items-center">
+                                        <i class="fas fa-check text-yellow mr-2"></i>
+                                        Client presentation skills
+                                    </li>
+                                </ul>
+                            </div>
+                            <button class="bg-yellow text-black py-2 rounded-full font-semibold hover:bg-opacity-90 transition duration-300 w-full">
+                                Enroll Now
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Course 2 -->
+                <div class="course-card">
+                    <div class="course-inner h-full">
+                        <div class="course-front glass-dark rounded-2xl overflow-hidden h-full hover-scale">
+                            <div class="relative">
+                                <img src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80" alt="Sustainable Architecture" class="w-full h-48 object-cover">
+                                <div class="absolute top-4 right-4 bg-yellow text-black px-3 py-1 rounded-full text-sm font-bold">
+                                    NEW
+                                </div>
+                            </div>
+                            <div class="p-6">
+                                <div class="flex justify-between items-start mb-2">
+                                    <h3 class="text-xl font-bold">Sustainable Architecture</h3>
+                                    <div class="flex items-center text-yellow">
+                                        <i class="fas fa-star"></i>
+                                        <span class="ml-1">4.8</span>
+                                    </div>
+                                </div>
+                                <p class="text-gray-400 text-sm mb-4">
+                                    Learn to design eco-friendly buildings that reduce environmental impact.
+                                </p>
+                                <div class="flex justify-between items-center">
+                                    <div class="flex items-center text-sm text-gray-400">
+                                        <i class="far fa-clock mr-1"></i>
+                                        <span>28 hours</span>
+                                    </div>
+                                    <div class="text-yellow font-bold">
+                                        $179
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="course-back glass-dark rounded-2xl p-6 absolute top-0 left-0 w-full h-full flex flex-col justify-between">
+                            <div>
+                                <h3 class="text-xl font-bold mb-4">Sustainable Architecture</h3>
+                                <p class="text-sm mb-4">What you'll learn:</p>
+                                <ul class="text-sm space-y-2 mb-6">
+                                    <li class="flex items-center">
+                                        <i class="fas fa-check text-yellow mr-2"></i>
+                                        Green building materials
+                                    </li>
+                                    <li class="flex items-center">
+                                        <i class="fas fa-check text-yellow mr-2"></i>
+                                        Energy-efficient design
+                                    </li>
+                                    <li class="flex items-center">
+                                        <i class="fas fa-check text-yellow mr-2"></i>
+                                        LEED certification process
+                                    </li>
+                                    <li class="flex items-center">
+                                        <i class="fas fa-check text-yellow mr-2"></i>
+                                        Passive solar techniques
+                                    </li>
+                                </ul>
+                            </div>
+                            <button class="bg-yellow text-black py-2 rounded-full font-semibold hover:bg-opacity-90 transition duration-300 w-full">
+                                Enroll Now
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Course 3 -->
+                <div class="course-card">
+                    <div class="course-inner h-full">
+                        <div class="course-front glass-dark rounded-2xl overflow-hidden h-full hover-scale">
+                            <div class="relative">
+                                <img src="https://images.unsplash.com/photo-1487958449943-2429e8be8625?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80" alt="Urban Planning" class="w-full h-48 object-cover">
+                            </div>
+                            <div class="p-6">
+                                <div class="flex justify-between items-start mb-2">
+                                    <h3 class="text-xl font-bold">Urban Planning & Design</h3>
+                                    <div class="flex items-center text-yellow">
+                                        <i class="fas fa-star"></i>
+                                        <span class="ml-1">4.7</span>
+                                    </div>
+                                </div>
+                                <p class="text-gray-400 text-sm mb-4">
+                                    Create functional and beautiful urban spaces with comprehensive planning techniques.
+                                </p>
+                                <div class="flex justify-between items-center">
+                                    <div class="flex items-center text-sm text-gray-400">
+                                        <i class="far fa-clock mr-1"></i>
+                                        <span>40 hours</span>
+                                    </div>
+                                    <div class="text-yellow font-bold">
+                                        $249
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="course-back glass-dark rounded-2xl p-6 absolute top-0 left-0 w-full h-full flex flex-col justify-between">
+                            <div>
+                                <h3 class="text-xl font-bold mb-4">Urban Planning & Design</h3>
+                                <p class="text-sm mb-4">What you'll learn:</p>
+                                <ul class="text-sm space-y-2 mb-6">
+                                    <li class="flex items-center">
+                                        <i class="fas fa-check text-yellow mr-2"></i>
+                                        Zoning regulations
+                                    </li>
+                                    <li class="flex items-center">
+                                        <i class="fas fa-check text-yellow mr-2"></i>
+                                        Transportation planning
+                                    </li>
+                                    <li class="flex items-center">
+                                        <i class="fas fa-check text-yellow mr-2"></i>
+                                        Public space design
+                                    </li>
+                                    <li class="flex items-center">
+                                        <i class="fas fa-check text-yellow mr-2"></i>
+                                        Community engagement
+                                    </li>
+                                </ul>
+                            </div>
+                            <button class="bg-yellow text-black py-2 rounded-full font-semibold hover:bg-opacity-90 transition duration-300 w-full">
+                                Enroll Now
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="text-center mt-16">
+                <button class="glass-yellow border border-yellow px-8 py-3 rounded-full font-bold hover:bg-opacity-30 transition duration-300 hover-scale">
+                    View All Courses
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Zaki -->
+    <section id="about" class="py-20 relative overflow-hidden parallax" style="background-image: url('https://imagesixlib=rb-4.0.3&ixid=M3wxjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80');">
+        <div class="absolute inset-0 bg-black bg-opacity-70"></div>
+        <div class="container mx-auto px-6 relative z-10">
+            <div class="flex flex-col lg:flex-row items-center">
+                <div class="lg:w-1/2 mb-12 lg:mb-0 lg:pr-12">
+                    <div class="glass-dark p-8 rounded-2xl hover-scale">
+                        <h2 class="text-3xl md:text-5xl font-bold mb-6">
+                            MEET <span class="text-yellow">ZAKI</span>
+                        </h2>
+                        <p class="text-gray-300 mb-6">
+                            With over 15 years of experience in architectural design and education, Zaki has transformed the way students learn architecture. His innovative teaching methods have helped thousands of aspiring architects worldwide.
+                        </p>
+                        <div class="space-y-4 mb-8">
+                            <div class="flex items-start">
+                                <div class="bg-yellow bg-opacity-20 p-2 rounded-full mr-4">
+                                    <i class="fas fa-award text-yellow"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-bold">Award-Winning Architect</h4>
+                                    <p class="text-sm text-gray-400">Recipient of the Global Architecture Prize 2022</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start">
+                                <div class="bg-yellow bg-opacity-20 p-2 rounded-full mr-4">
+                                    <i class="fas fa-chalkboard-teacher text-yellow"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-bold">Master Educator</h4>
+                                    <p class="text-sm text-gray-400">10+ years teaching at top architecture schools</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start">
+                                <div class="bg-yellow bg-opacity-20 p-2 rounded-full mr-4">
+                                    <i class="fas fa-building text-yellow"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-bold">Industry Leader</h4>
+                                    <p class="text-sm text-gray-400">Founder of Zaki Architects, a global design firm</p>
+                                </div>
+                            </div>
+                        </div>
+                        <button class="bg-yellow text-black px-6 py-3 rounded-full font-bold hover:bg-opacity-90 transition duration-300">
+                            Learn More About Zaki
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="lg:w-1/2 relative">
+                    <div class="glass-dark p-2 rounded-2xl inline-block">
+                        <img src="zaki.jpeg" alt="Zaki" class="rounded-xl w-full max-w-md mx-auto">
+                    </div>
+                    <div class="absolute -bottom-10 -left-10 w-32 h-32 bg-yellow rounded-full flex items-center justify-center opacity-20 floating">
+                        <i class="fas fa-drafting-compass text-4xl"></i>
+                    </div>
+                    <div class="absolute -top-10 -right-10 w-24 h-24 bg-yellow rounded-full flex items-center justify-center opacity-20 floating" style="animation-delay: 0.5s;">
+                        <i class="fas fa-ruler-combined text-3xl"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Why Choose Us -->
+    <section class="py-20 relative overflow-hidden">
+        <div class="absolute inset-0 grid-pattern"></div>
+        <div class="container mx-auto px-6 relative">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl md:text-5xl font-bold mb-4">
+                    WHY <span class="text-yellow">CHOOSE US</span>
+                </h2>
+                <p class="text-gray-400 max-w-2xl mx-auto">
+                    Discover what makes Zaki Architect the premier choice for architectural education.
+                </p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="glass-dark p-8 rounded-2xl hover-scale">
+                    <div class="w-16 h-16 bg-yellow bg-opacity-20 rounded-full flex items-center justify-center mb-6">
+                        <i class="fas fa-video text-yellow text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-4">Interactive Learning</h3>
+                    <p class="text-gray-400">
+                        Engage with high-quality video lessons, 3D models, and interactive exercises that bring architectural concepts to life.
+                    </p>
+                </div>
+                
+                <div class="glass-dark p-8 rounded-2xl hover-scale">
+                    <div class="w-16 h-16 bg-yellow bg-opacity-20 rounded-full flex items-center justify-center mb-6">
+                        <i class="fas fa-briefcase text-yellow text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-4">Real-World Projects</h3>
+                    <p class="text-gray-400">
+                        Work on actual architectural projects with feedback from industry professionals to build your portfolio.
+                    </p>
+                </div>
+                
+                <div class="glass-dark p-8 rounded-2xl hover-scale">
+                    <div class="w-16 h-16 bg-yellow bg-opacity-20 rounded-full flex items-center justify-center mb-6">
+                        <i class="fas fa-users text-yellow text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-4">Community Support</h3>
+                    <p class="text-gray-400">
+                        Join a global community of architects and students for networking, collaboration, and peer support.
+                    </p>
+                </div>
+                
+                <div class="glass-dark p-8 rounded-2xl hover-scale">
+                    <div class="w-16 h-16 bg-yellow bg-opacity-20 rounded-full flex items-center justify-center mb-6">
+                        <i class="fas fa-certificate text-yellow text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-4">Industry-Recognized Certificates</h3>
+                    <p class="text-gray-400">
+                        Earn certificates that are respected by architectural firms and institutions worldwide.
+                    </p>
+                </div>
+                
+                <div class="glass-dark p-8 rounded-2xl hover-scale">
+                    <div class="w-16 h-16 bg-yellow bg-opacity-20 rounded-full flex items-center justify-center mb-6">
+                        <i class="fas fa-laptop-code text-yellow text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-4">Cutting-Edge Tools</h3>
+                    <p class="text-gray-400">
+                        Learn using the latest architectural software and technologies used by professionals.
+                    </p>
+                </div>
+                
+                <div class="glass-dark p-8 rounded-2xl hover-scale">
+                    <div class="w-16 h-16 bg-yellow bg-opacity-20 rounded-full flex items-center justify-center mb-6">
+                        <i class="fas fa-clock text-yellow text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-4">Flexible Schedule</h3>
+                    <p class="text-gray-400">
+                        Learn at your own pace with 24/7 access to course materials from anywhere in the world.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials -->
+    <section id="testimonials" class="py-20 relative overflow-hidden parallax" style="background-image: url('https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80');">
+        <div class="absolute inset-0 bg-black bg-opacity-70"></div>
+        <div class="container mx-auto px-6 relative z-10">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl md:text-5xl font-bold mb-4">
+                    WHAT OUR <span class="text-yellow">STUDENTS SAY</span>
+                </h2>
+                <p class="text-gray-400 max-w-2xl mx-auto">
+                    Hear from architects who transformed their careers with our courses.
+                </p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="glass-dark p-8 rounded-2xl hover-scale">
+                    <div class="flex items-center mb-6">
+                        <img src="asma.jpeg" alt="Student" class="w-16 h-16 rounded-full object-cover mr-4">
+                        <div>
+                            <h4 class="font-bold">Sarah abdi</h4>
+                            <p class="text-sm text-yellow">Architect at DesignWorks</p>
+                        </div>
+                    </div>
+                    <div class="flex mb-4 text-yellow">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <p class="text-gray-300">
+                        "Zaki's Modern Architectural Design course completely changed my approach to projects. I landed my dream job just two months after completing the course!"
+                    </p>
+                </div>
+                
+                <div class="glass-dark p-8 rounded-2xl hover-scale">
+                    <div class="flex items-center mb-6">
+                        <img src="zack.jpeg" alt="Student" class="w-16 h-16 rounded-full object-cover mr-4">
+                        <div>
+                            <h4 class="font-bold">Mohamed J</h4>
+                            <p class="text-sm text-yellow">Urban Planner</p>
+                        </div>
+                    </div>
+                    <div class="flex mb-4 text-yellow">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <p class="text-gray-300">
+                        "The Urban Planning course gave me practical skills I use every day. The community projects were especially valuable for my current role."
+                    </p>
+                </div>
+                
+                <div class="glass-dark p-8 rounded-2xl hover-scale">
+                    <div class="flex items-center mb-6">
+                        <img src="umayma.jpeg" alt="Student" class="w-16 h-16 rounded-full object-cover mr-4">
+                        <div>
+                            <h4 class="font-bold">Aisha Mohammed</h4>
+                            <p class="text-sm text-yellow">Sustainable Design Specialist</p>
+                        </div>
+                    </div>
+                    <div class="flex mb-4 text-yellow">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <p class="text-gray-300">
+                        "I've taken many online courses, but Zaki's teaching style is unmatched. The Sustainable Architecture course helped me specialize in an emerging field."
+                    </p>
+                </div>
+            </div>
+            
+            <div class="mt-16 flex justify-center">
+                <div class="flex space-x-2">
+                    <button class="w-3 h-3 bg-yellow rounded-full"></button>
+                    <button class="w-3 h-3 bg-gray-600 rounded-full"></button>
+                    <button class="w-3 h-3 bg-gray-600 rounded-full"></button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="py-20 relative overflow-hidden">
+        <div class="absolute inset-0 grid-pattern"></div>
+        <div class="container mx-auto px-6 relative">
+            <div class="glass-dark rounded-2xl p-12 text-center max-w-4xl mx-auto">
+                <h2 class="text-3xl md:text-5xl font-bold mb-6">
+                    READY TO <span class="text-yellow">TRANSFORM</span> YOUR CAREER?
+                </h2>
+                <p class="text-xl text-gray-300 mb-8">
+                    Join thousands of architects who've accelerated their careers with Zaki Architect.
+                </p>
+                <button class="bg-yellow text-black px-8 py-4 rounded-full font-bold text-lg hover:bg-opacity-90 transition duration-300 hover-scale pulse">
+                    Start Learning Today
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="py-20 relative overflow-hidden">
+        <div class="container mx-auto px-6">
+            <div class="flex flex-col lg:flex-row">
+                <div class="lg:w-1/2 mb-12 lg:mb-0 lg:pr-12">
+                    <h2 class="text-3xl md:text-5xl font-bold mb-6">
+                        GET IN <span class="text-yellow">TOUCH</span>
+                    </h2>
+                    <p class="text-gray-400 mb-8">
+                        Have questions about our courses or need guidance on which program is right for you? Our team is here to help.
+                    </p>
+                    
+                    <div class="space-y-6">
+                        <div class="flex items-start">
+                            <div class="bg-yellow bg-opacity-20 p-3 rounded-full mr-4">
+                                <i class="fas fa-envelope text-yellow"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-bold">Email Us</h4>
+                                <p class="text-gray-400">hello@zakiarchitect.com</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-start">
+                            <div class="bg-yellow bg-opacity-20 p-3 rounded-full mr-4">
+                                <i class="fas fa-phone-alt text-yellow"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-bold">Call Us</h4>
+                                <p class="text-gray-400">+252 63 6390524</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-start">
+                            <div class="bg-yellow bg-opacity-20 p-3 rounded-full mr-4">
+                                <i class="fas fa-map-marker-alt text-yellow"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-bold">Visit Us</h4>
+                                <p class="text-gray-400">Design street </p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-8 flex space-x-4">
+                        <a href="#" class="w-10 h-10 glass-dark rounded-full flex items-center justify-center hover:bg-yellow hover:bg-opacity-20 transition duration-300">
+                            <i class="fab fa-facebook-f"></i>
+                        </a>
+                        <a href="#" class="w-10 h-10 glass-dark rounded-full flex items-center justify-center hover:bg-yellow hover:bg-opacity-20 transition duration-300">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                        <a href="#" class="w-10 h-10 glass-dark rounded-full flex items-center justify-center hover:bg-yellow hover:bg-opacity-20 transition duration-300">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                        <a href="#" class="w-10 h-10 glass-dark rounded-full flex items-center justify-center hover:bg-yellow hover:bg-opacity-20 transition duration-300">
+                            <i class="fab fa-linkedin-in"></i>
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="lg:w-1/2">
+                    <div class="glass-dark p-8 rounded-2xl">
+                        <h3 class="text-2xl font-bold mb-6">Send Us a Message</h3>
+                        <form>
+                            <div class="mb-6">
+                                <label for="name" class="block text-sm font-medium mb-2">Your Name</label>
+                                <input type="text" id="name" class="w-full bg-gray-900 bg-opacity-50 border border-gray-700 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-yellow focus:border-transparent" placeholder="jama A">
+                            </div>
+                            <div class="mb-6">
+                                <label for="email" class="block text-sm font-medium mb-2">Email Address</label>
+                                <input type="email" id="email" class="w-full bg-gray-900 bg-opacity-50 border border-gray-700 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-yellow focus:border-transparent" placeholder="jama@example.com">
+                            </div>
+                            <div class="mb-6">
+                                <label for="subject" class="block text-sm font-medium mb-2">Subject</label>
+                                <input type="text" id="subject" class="w-full bg-gray-900 bg-opacity-50 border border-gray-700 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-yellow focus:border-transparent" placeholder="Course Inquiry">
+                            </div>
+                            <div class="mb-6">
+                                <label for="message" class="block text-sm font-medium mb-2">Message</label>
+                                <textarea id="message" rows="4" class="w-full bg-gray-900 bg-opacity-50 border border-gray-700 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-yellow focus:border-transparent" placeholder="Your message here..."></textarea>
+                            </div>
+                            <button type="submit" class="bg-yellow text-black px-6 py-3 rounded-full font-bold hover:bg-opacity-90 transition duration-300 w-full">
+                                Send Message
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Newsletter -->
+    <section class="py-16 bg-black bg-opacity-50">
+        <div class="container mx-auto px-6">
+            <div class="glass-dark rounded-2xl p-8 md:p-12 text-center max-w-4xl mx-auto">
+                <h3 class="text-2xl md:text-3xl font-bold mb-4">Stay Updated</h3>
+                <p class="text-gray-400 mb-8 max-w-2xl mx-auto">
+                    Subscribe to our newsletter for the latest course updates, architectural insights, and exclusive offers.
+                </p>
+                <div class="flex flex-col md:flex-row max-w-md mx-auto">
+                    <input type="email" placeholder="Your email address" class="bg-gray-900 bg-opacity-50 border border-gray-700 rounded-full px-6 py-3 focus:outline-none focus:ring-2 focus:ring-yellow focus:border-transparent mb-4 md:mb-0 md:mr-4 flex-grow">
+                    <button class="bg-yellow text-black px-6 py-3 rounded-full font-bold hover:bg-opacity-90 transition duration-300 whitespace-nowrap">
+                        Subscribe
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="py-12 bg-black bg-opacity-80">
+        <div class="container mx-auto px-6">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div>
+                    <div class="flex items-center mb-4">
+                        <div class="w-10 h-10 bg-yellow rounded-full flex items-center justify-center mr-3">
+                            <i class="fas fa-drafting-compass text-black text-xl"></i>
+                        </div>
+                        <h1 class="text-xl font-bold text-yellow">ZAKI<span class="text-white">ARCHITECT</span></h1>
+                    </div>
+                    <p class="text-gray-400 text-sm">
+                        Transforming architectural education through innovative online learning experiences.
+                    </p>
+                </div>
+                
+                <div>
+                    <h4 class="text-lg font-bold mb-4">Quick Links</h4>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-gray-400 hover:text-yellow transition duration-300 text-sm">Home</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-yellow transition duration-300 text-sm">Courses</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-yellow transition duration-300 text-sm">About</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-yellow transition duration-300 text-sm">Testimonials</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-yellow transition duration-300 text-sm">Contact</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="text-lg font-bold mb-4">Courses</h4>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-gray-400 hover:text-yellow transition duration-300 text-sm">Modern Design</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-yellow transition duration-300 text-sm">Sustainable Architecture</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-yellow transition duration-300 text-sm">Urban Planning</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-yellow transition duration-300 text-sm">Interior Design</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-yellow transition duration-300 text-sm">All Courses</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="text-lg font-bold mb-4">Legal</h4>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-gray-400 hover:text-yellow transition duration-300 text-sm">Terms of Service</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-yellow transition duration-300 text-sm">Privacy Policy</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-yellow transition duration-300 text-sm">Refund Policy</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-yellow transition duration-300 text-sm">Cookie Policy</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="border-t border-gray-800 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center">
+                <p class="text-gray-500 text-sm mb-4 md:mb-0">
+                    © 2025 Zaki Architect. All rights reserved.
+                </p>
+                <div class="flex space-x-6">
+                    <a href="#" class="text-gray-500 hover:text-yellow transition duration-300">
+                        <i class="fab fa-facebook-f"></i>
+                    </a>
+                    <a href="#" class="text-gray-500 hover:text-yellow transition duration-300">
+                        <i class="fab fa-twitter"></i>
+                    </a>
+                    <a href="#" class="text-gray-500 hover:text-yellow transition duration-300">
+                        <i class="fab fa-instagram"></i>
+                    </a>
+                    <a href="#" class="text-gray-500 hover:text-yellow transition duration-300">
+                        <i class="fab fa-linkedin-in"></i>
+                    </a>
+                    <a href="#" class="text-gray-500 hover:text-yellow transition duration-300">
+                        <i class="fab fa-youtube"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Back to Top -->
+    <a href="#home" class="fixed bottom-8 right-8 w-12 h-12 bg-yellow rounded-full flex items-center justify-center text-black shadow-lg hover:bg-opacity-90 transition duration-300 z-40">
+        <i class="fas fa-arrow-up"></i>
+    </a>
+
+    <script>
+        // Preloader
+        window.addEventListener('load', function() {
+            const preloader = document.getElementById('preloader');
+            setTimeout(() => {
+                preloader.style.opacity = '0';
+                setTimeout(() => {
+                    preloader.style.display = 'none';
+                }, 500);
+            }, 1000);
+        });
+
+        // Mobile menu toggle
+        const menuToggle = document.getElementById('menu-toggle');
+        const mobileMenu = document.getElementById('mobile-menu');
+        
+        menuToggle.addEventListener('click', function() {
+            mobileMenu.classList.toggle('hidden');
+        });
+
+        // GSAP Animations
+        gsap.registerPlugin(ScrollTrigger);
+        
+        // Animate elements on scroll
+        gsap.utils.toArray('.hover-scale').forEach(element => {
+            gsap.from(element, {
+                scrollTrigger: {
+                    trigger: element,
+                    start: "top 80%",
+                    toggleActions: "play none none none"
+                },
+                opacity: 0,
+                y: 50,
+                duration: 0.8,
+                ease: "power2.out"
+            });
+        });
+
+        // Parallax effects
+        gsap.utils.toArray('.parallax').forEach(section => {
+            const image = section.querySelector('img');
+            if (image) {
+                gsap.to(image, {
+                    yPercent: 20,
+                    ease: "none",
+                    scrollTrigger: {
+                        trigger: section,
+                        start: "top bottom",
+                        end: "bottom top",
+                        scrub: true
+                    }
+                });
+            }
+        });
+
+        // Course card hover effect
+        document.querySelectorAll('.course-card').forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                gsap.to(this.querySelector('.course-inner'), {
+                    duration: 0.5,
+                    ease: "power2.out"
+                });
+            });
+            
+            card.addEventListener('mouseleave', function() {
+                gsap.to(this.querySelector('.course-inner'), {
+                    duration: 0.5,
+                    ease: "power2.out"
+                });
+            });
+        });
+
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                const targetId = this.getAttribute('href');
+                const targetElement = document.querySelector(targetId);
+                
+                if (targetElement) {
+                    window.scrollTo({
+                        top: targetElement.offsetTop - 80,
+                        behavior: 'smooth'
+                    });
+                    
+                    // Close mobile menu if open
+                    if (!mobileMenu.classList.contains('hidden')) {
+                        mobileMenu.classList.add('hidden');
+                    }
+                }
+            });
+        });
+
+        // Scroll to top button visibility
+        window.addEventListener('scroll', function() {
+            const backToTop = document.querySelector('a[href="#home"]');
+            if (window.scrollY > 300) {
+                backToTop.style.opacity = '1';
+                backToTop.style.visibility = 'visible';
+            } else {
+                backToTop.style.opacity = '0';
+                backToTop.style.visibility = 'hidden';
+            }
+        });
+    </script>
+</body>
+</html>
