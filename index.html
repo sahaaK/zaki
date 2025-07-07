@@ -141,14 +141,7 @@
     </style>
 </head>
 <body class="relative">
-    <!-- Preloader -->
-    <div id="preloader" class="fixed inset-0 bg-black z-50 flex items-center justify-center">
-        <div class="text-center">
-            <div class="w-20 h-20 border-4 border-yellow border-t-transparent rounded-full animate-spin mx-auto"></div>
-            <h2 class="text-yellow text-2xl mt-4 font-bold">ZAKI ARCHITECT</h2>
-            <p class="text-white mt-2">Building futures through design</p>
-        </div>
-    </div>
+
 
     <!-- Navigation -->
     <nav class="glass-dark fixed w-full z-40 py-4 px-6 shadow-lg">
@@ -170,8 +163,7 @@
             
             <div class="flex items-center space-x-4">
                 <button class="bg-yellow text-black px-4 py-2 rounded-full font-semibold hover:bg-opacity-90 transition duration-300 hidden md:block">
-                    Sign In
-                </button>
+                    <a href="dash.html" class="bg-yellow text-black px-4 py-2 rounded-full font-semibold hover:bg-opacity-90 transition duration-300 hidden md:block text-center">Sign In</a>
                 <button id="menu-toggle" class="md:hidden text-white focus:outline-none">
                     <i class="fas fa-bars text-2xl"></i>
                 </button>
@@ -187,8 +179,7 @@
                 <a href="#testimonials" class="text-white hover:text-yellow transition duration-300">Testimonials</a>
                 <a href="#contact" class="text-white hover:text-yellow transition duration-300">Contact</a>
                 <button class="bg-yellow text-black px-4 py-2 rounded-full font-semibold hover:bg-opacity-90 transition duration-300 w-full">
-                    Sign In
-                </button>
+                    <a href="dash.html" class="bg-yellow text-black px-4 py-2 rounded-full font-semibold hover:bg-opacity-90 transition duration-300 w-full text-center block">Sign In</a>
             </div>
         </div>
     </nav>
@@ -883,16 +874,7 @@
     </a>
 
     <script>
-        // Preloader
-        window.addEventListener('load', function() {
-            const preloader = document.getElementById('preloader');
-            setTimeout(() => {
-                preloader.style.opacity = '0';
-                setTimeout(() => {
-                    preloader.style.display = 'none';
-                }, 500);
-            }, 1000);
-        });
+
 
         // Mobile menu toggle
         const menuToggle = document.getElementById('menu-toggle');

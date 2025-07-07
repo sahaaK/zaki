@@ -1,0 +1,1078 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zaki Architect | Student Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.1/chart.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/ScrollTrigger.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700;900&display=swap');
+        
+        :root {
+            --primary-dark: #0a0a0a;
+            --primary-yellow: #FFD700;
+            --glass-dark: rgba(10, 10, 10, 0.7);
+            --glass-yellow: rgba(255, 215, 0, 0.2);
+        }
+        
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background-color: var(--primary-dark);
+            color: white;
+            overflow-x: hidden;
+        }
+        
+        .glass-dark {
+            background: var(--glass-dark);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .glass-yellow {
+            background: var(--glass-yellow);
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 215, 0, 0.3);
+        }
+        
+        .text-yellow {
+            color: var(--primary-yellow);
+        }
+        
+        .bg-yellow {
+            background-color: var(--primary-yellow);
+        }
+        
+        .border-yellow {
+            border-color: var(--primary-yellow);
+        }
+        
+        .hover-scale {
+            transition: transform 0.3s ease;
+        }
+        
+        .hover-scale:hover {
+            transform: scale(1.05);
+        }
+        
+        .course-card {
+            perspective: 1000px;
+        }
+        
+        .course-inner {
+            transition: transform 0.8s;
+            transform-style: preserve-3d;
+        }
+        
+        .course-card:hover .course-inner {
+            transform: rotateY(180deg);
+        }
+        
+        .course-front, .course-back {
+            backface-visibility: hidden;
+        }
+        
+        .course-back {
+            transform: rotateY(180deg);
+        }
+        
+        .floating {
+            animation: floating 3s ease-in-out infinite;
+        }
+        
+        @keyframes floating {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-15px); }
+            100% { transform: translateY(0px); }
+        }
+        
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(255, 215, 0, 0.7); }
+            70% { box-shadow: 0 0 0 15px rgba(255, 215, 0, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(255, 215, 0, 0); }
+        }
+        
+        .grid-pattern {
+            background-image: 
+                linear-gradient(rgba(255, 215, 0, 0.1) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 215, 0, 0.1) 1px, transparent 1px);
+            background-size: 30px 30px;
+        }
+        
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: #0a0a0a;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: #FFD700;
+            border-radius: 4px;
+        }
+        
+        /* Progress bar */
+        .progress-container {
+            width: 100%;
+            height: 8px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            background-color: #FFD700;
+            border-radius: 4px;
+            transition: width 0.5s ease;
+        }
+        
+        /* Lesson completion checkmark */
+        .lesson-complete {
+            position: relative;
+        }
+        
+        .lesson-complete::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 12px;
+            height: 12px;
+            background-color: #FFD700;
+            border-radius: 50%;
+        }
+        
+        /* Video player */
+        .video-container {
+            position: relative;
+            padding-bottom: 56.25%; /* 16:9 aspect ratio */
+            height: 0;
+            overflow: hidden;
+        }
+        
+        .video-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+        
+        /* Notification badge */
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            width: 18px;
+            height: 18px;
+            background-color: #FF0000;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            font-weight: bold;
+        }
+        
+        /* Dark mode toggle */
+        .toggle-checkbox:checked {
+            right: 0;
+            border-color: #FFD700;
+        }
+        
+        .toggle-checkbox:checked + .toggle-label {
+            background-color: #FFD700;
+        }
+    </style>
+</head>
+<body class="relative">
+    <!-- Navigation -->
+    <nav class="glass-dark fixed w-full z-40 py-4 px-6 shadow-lg">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center">
+                <div class="w-10 h-10 bg-yellow rounded-full flex items-center justify-center mr-3">
+                    <i class="fas fa-drafting-compass text-black text-xl"></i>
+                </div>
+                <h1 class="text-2xl font-bold text-yellow">ZAKI<span class="text-white">ARCHITECT</span></h1>
+            </div>
+            
+            <div class="hidden md:flex items-center space-x-8">
+                <a href="#dashboard" class="text-white hover:text-yellow transition duration-300">Dashboard</a>
+                <a href="#courses" class="text-white hover:text-yellow transition duration-300">My Courses</a>
+                <a href="#progress" class="text-white hover:text-yellow transition duration-300">Progress</a>
+                <a href="#resources" class="text-white hover:text-yellow transition duration-300">Resources</a>
+                <a href="#community" class="text-white hover:text-yellow transition duration-300">Community</a>
+                
+                <div class="relative ml-4">
+                    <button id="notification-btn" class="text-white hover:text-yellow transition duration-300">
+                        <i class="far fa-bell text-xl"></i>
+                        <span class="notification-badge">3</span>
+                    </button>
+                    <div id="notification-dropdown" class="hidden absolute right-0 mt-2 w-72 glass-dark rounded-lg shadow-lg py-2 z-50">
+                        <div class="px-4 py-2 border-b border-gray-700">
+                            <h3 class="font-bold">Notifications</h3>
+                        </div>
+                        <a href="#" class="block px-4 py-2 hover:bg-gray-800 transition duration-300">
+                            <div class="flex items-start">
+                                <div class="flex-shrink-0">
+                                    <i class="fas fa-certificate text-yellow mt-1"></i>
+                                </div>
+                                <div class="ml-3">
+                                    <p class="text-sm">New certificate available for Modern Design course</p>
+                                    <p class="text-xs text-gray-400 mt-1">2 hours ago</p>
+                                </div>
+                            </div>
+                        </a>
+                        <a href="#" class="block px-4 py-2 hover:bg-gray-800 transition duration-300">
+                            <div class="flex items-start">
+                                <div class="flex-shrink-0">
+                                    <i class="fas fa-comment text-yellow mt-1"></i>
+                                </div>
+                                <div class="ml-3">
+                                    <p class="text-sm">Zaki replied to your question in Module 3</p>
+                                    <p class="text-xs text-gray-400 mt-1">5 hours ago</p>
+                                </div>
+                            </div>
+                        </a>
+                        <a href="#" class="block px-4 py-2 hover:bg-gray-800 transition duration-300">
+                            <div class="flex items-start">
+                                <div class="flex-shrink-0">
+                                    <i class="fas fa-calendar text-yellow mt-1"></i>
+                                </div>
+                                <div class="ml-3">
+                                    <p class="text-sm">Live Q&A session tomorrow at 2 PM</p>
+                                    <p class="text-xs text-gray-400 mt-1">1 day ago</p>
+                                </div>
+                            </div>
+                        </a>
+                        <div class="px-4 py-2 border-t border-gray-700">
+                            <a href="#" class="text-sm text-yellow hover:underline">View all notifications</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="relative ml-4">
+                    <button id="profile-btn" class="flex items-center space-x-2 focus:outline-none">
+                        <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Profile" class="w-8 h-8 rounded-full object-cover">
+                        <span class="text-white hidden md:inline">John Doe</span>
+                        <i class="fas fa-chevron-down text-xs text-gray-400"></i>
+                    </button>
+                    <div id="profile-dropdown" class="hidden absolute right-0 mt-2 w-48 glass-dark rounded-lg shadow-lg py-1 z-50">
+                        <a href="#" class="block px-4 py-2 text-sm hover:bg-gray-800 transition duration-300">My Profile</a>
+                        <a href="#" class="block px-4 py-2 text-sm hover:bg-gray-800 transition duration-300">Account Settings</a>
+                        <a href="#" class="block px-4 py-2 text-sm hover:bg-gray-800 transition duration-300">Billing</a>
+                        <div class="border-t border-gray-700"></div>
+                        <a href="#" class="block px-4 py-2 text-sm hover:bg-gray-800 transition duration-300">Sign Out</a>
+                    </div>
+                </div>
+            </div>
+            
+            <button id="mobile-menu-toggle" class="md:hidden text-white focus:outline-none">
+                <i class="fas fa-bars text-2xl"></i>
+            </button>
+        </div>
+        
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="md:hidden hidden glass-dark absolute top-full left-0 w-full py-4 px-6 shadow-lg">
+            <div class="flex flex-col space-y-4">
+                <a href="#dashboard" class="text-white hover:text-yellow transition duration-300">Dashboard</a>
+                <a href="#courses" class="text-white hover:text-yellow transition duration-300">My Courses</a>
+                <a href="#progress" class="text-white hover:text-yellow transition duration-300">Progress</a>
+                <a href="#resources" class="text-white hover:text-yellow transition duration-300">Resources</a>
+                <a href="#community" class="text-white hover:text-yellow transition duration-300">Community</a>
+                <div class="pt-4 border-t border-gray-700">
+                    <a href="#" class="block py-2 text-white hover:text-yellow transition duration-300">My Profile</a>
+                    <a href="#" class="block py-2 text-white hover:text-yellow transition duration-300">Account Settings</a>
+                    <a href="#" class="block py-2 text-white hover:text-yellow transition duration-300">Sign Out</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="pt-20 min-h-screen flex">
+        <!-- Sidebar -->
+        <aside class="hidden md:block w-64 glass-dark fixed h-full overflow-y-auto">
+            <div class="p-6">
+                <div class="flex items-center space-x-3 mb-8">
+                    <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Profile" class="w-10 h-10 rounded-full object-cover">
+                    <div>
+                        <h3 class="font-bold">John Doe</h3>
+                        <p class="text-xs text-gray-400">Student</p>
+                    </div>
+                </div>
+                
+                <div class="mb-8">
+                    <h4 class="text-xs uppercase tracking-wider text-gray-500 mb-4">Dashboard</h4>
+                    <nav class="space-y-2">
+                        <a href="#dashboard" class="flex items-center space-x-3 px-3 py-2 bg-gray-800 rounded-lg text-yellow">
+                            <i class="fas fa-home w-5 text-center"></i>
+                            <span>Overview</span>
+                        </a>
+                        <a href="#courses" class="flex items-center space-x-3 px-3 py-2 hover:bg-gray-800 rounded-lg transition duration-300">
+                            <i class="fas fa-book-open w-5 text-center"></i>
+                            <span>My Courses</span>
+                        </a>
+                        <a href="#progress" class="flex items-center space-x-3 px-3 py-2 hover:bg-gray-800 rounded-lg transition duration-300">
+                            <i class="fas fa-chart-line w-5 text-center"></i>
+                            <span>Progress</span>
+                        </a>
+                        <a href="#certificates" class="flex items-center space-x-3 px-3 py-2 hover:bg-gray-800 rounded-lg transition duration-300">
+                            <i class="fas fa-certificate w-5 text-center"></i>
+                            <span>Certificates</span>
+                        </a>
+                    </nav>
+                </div>
+                
+                <div class="mb-8">
+                    <h4 class="text-xs uppercase tracking-wider text-gray-500 mb-4">Learning</h4>
+                    <nav class="space-y-2">
+                        <a href="#resources" class="flex items-center space-x-3 px-3 py-2 hover:bg-gray-800 rounded-lg transition duration-300">
+                            <i class="fas fa-file-alt w-5 text-center"></i>
+                            <span>Resources</span>
+                        </a>
+                        <a href="#assignments" class="flex items-center space-x-3 px-3 py-2 hover:bg-gray-800 rounded-lg transition duration-300">
+                            <i class="fas fa-tasks w-5 text-center"></i>
+                            <span>Assignments</span>
+                            <span class="ml-auto bg-yellow text-black text-xs px-2 py-1 rounded-full">2</span>
+                        </a>
+                        <a href="#calendar" class="flex items-center space-x-3 px-3 py-2 hover:bg-gray-800 rounded-lg transition duration-300">
+                            <i class="fas fa-calendar-alt w-5 text-center"></i>
+                            <span>Calendar</span>
+                        </a>
+                    </nav>
+                </div>
+                
+                <div class="mb-8">
+                    <h4 class="text-xs uppercase tracking-wider text-gray-500 mb-4">Community</h4>
+                    <nav class="space-y-2">
+                        <a href="#discussions" class="flex items-center space-x-3 px-3 py-2 hover:bg-gray-800 rounded-lg transition duration-300">
+                            <i class="fas fa-comments w-5 text-center"></i>
+                            <span>Discussions</span>
+                        </a>
+                        <a href="#messages" class="flex items-center space-x-3 px-3 py-2 hover:bg-gray-800 rounded-lg transition duration-300">
+                            <i class="fas fa-envelope w-5 text-center"></i>
+                            <span>Messages</span>
+                            <span class="ml-auto bg-red-500 text-white text-xs px-2 py-1 rounded-full">3</span>
+                        </a>
+                        <a href="#study-groups" class="flex items-center space-x-3 px-3 py-2 hover:bg-gray-800 rounded-lg transition duration-300">
+                            <i class="fas fa-users w-5 text-center"></i>
+                            <span>Study Groups</span>
+                        </a>
+                    </nav>
+                </div>
+                
+                <div class="pt-4 border-t border-gray-700">
+                    <div class="flex items-center justify-between px-3 py-2">
+                        <span class="text-sm">Dark Mode</span>
+                        <div class="relative inline-block w-10 mr-2 align-middle select-none">
+                            <input type="checkbox" id="toggle" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer"/>
+                            <label for="toggle" class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-600 cursor-pointer"></label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Dashboard Content -->
+        <main class="flex-1 md:ml-64">
+            <!-- Dashboard Overview -->
+            <section id="dashboard" class="p-6">
+                <div class="container mx-auto">
+                    <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
+                        <div>
+                            <h2 class="text-2xl md:text-3xl font-bold">Welcome back, <span class="text-yellow">John</span></h2>
+                            <p class="text-gray-400">Here's your learning progress and upcoming activities</p>
+                        </div>
+                        <div class="mt-4 md:mt-0">
+                            <button class="bg-yellow text-black px-6 py-2 rounded-full font-semibold hover:bg-opacity-90 transition duration-300">
+                                <i class="fas fa-plus mr-2"></i> New Course
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Stats Cards -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                        <div class="glass-dark p-6 rounded-xl hover-scale">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-gray-400 text-sm">Active Courses</p>
+                                    <h3 class="text-2xl font-bold">3</h3>
+                                </div>
+                                <div class="w-12 h-12 bg-yellow bg-opacity-20 rounded-full flex items-center justify-center">
+                                    <i class="fas fa-book text-yellow"></i>
+                                </div>
+                            </div>
+                            <div class="mt-4">
+                                <a href="#" class="text-yellow text-sm hover:underline">View all courses</a>
+                            </div>
+                        </div>
+                        
+                        <div class="glass-dark p-6 rounded-xl hover-scale">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-gray-400 text-sm">Hours Learned</p>
+                                    <h3 class="text-2xl font-bold">42</h3>
+                                </div>
+                                <div class="w-12 h-12 bg-yellow bg-opacity-20 rounded-full flex items-center justify-center">
+                                    <i class="fas fa-clock text-yellow"></i>
+                                </div>
+                            </div>
+                            <div class="mt-4">
+                                <a href="#" class="text-yellow text-sm hover:underline">View learning history</a>
+                            </div>
+                        </div>
+                        
+                        <div class="glass-dark p-6 rounded-xl hover-scale">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-gray-400 text-sm">Certificates</p>
+                                    <h3 class="text-2xl font-bold">1</h3>
+                                </div>
+                                <div class="w-12 h-12 bg-yellow bg-opacity-20 rounded-full flex items-center justify-center">
+                                    <i class="fas fa-certificate text-yellow"></i>
+                                </div>
+                            </div>
+                            <div class="mt-4">
+                                <a href="#" class="text-yellow text-sm hover:underline">View certificates</a>
+                            </div>
+                        </div>
+                        
+                        <div class="glass-dark p-6 rounded-xl hover-scale">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-gray-400 text-sm">Streak</p>
+                                    <h3 class="text-2xl font-bold">7 days</h3>
+                                </div>
+                                <div class="w-12 h-12 bg-yellow bg-opacity-20 rounded-full flex items-center justify-center">
+                                    <i class="fas fa-fire text-yellow"></i>
+                                </div>
+                            </div>
+                            <div class="mt-4">
+                                <a href="#" class="text-yellow text-sm hover:underline">Keep it going!</a>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Current Courses & Progress -->
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+                        <!-- Progress Chart -->
+                        <div class="lg:col-span-2 glass-dark p-6 rounded-xl hover-scale">
+                            <div class="flex justify-between items-center mb-6">
+                                <h3 class="text-xl font-bold">Your Learning Progress</h3>
+                                <select class="bg-gray-900 bg-opacity-50 border border-gray-700 rounded-lg px-3 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-yellow focus:border-transparent">
+                                    <option>Last 7 days</option>
+                                    <option>Last 30 days</option>
+                                    <option>Last 90 days</option>
+                                    <option>All time</option>
+                                </select>
+                            </div>
+                            <div class="h-64">
+                                <canvas id="progressChart"></canvas>
+                            </div>
+                        </div>
+                        
+                        <!-- Upcoming Deadlines -->
+                        <div class="glass-dark p-6 rounded-xl hover-scale">
+                            <div class="flex justify-between items-center mb-6">
+                                <h3 class="text-xl font-bold">Upcoming Deadlines</h3>
+                                <a href="#" class="text-yellow text-sm hover:underline">View all</a>
+                            </div>
+                            <div class="space-y-4">
+                                <div class="flex items-start">
+                                    <div class="bg-yellow bg-opacity-20 p-2 rounded-full mr-4">
+                                        <i class="fas fa-tasks text-yellow"></i>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-bold">Module 3 Assignment</h4>
+                                        <p class="text-sm text-gray-400 mb-1">Modern Architectural Design</p>
+                                        <p class="text-xs text-yellow">Due tomorrow</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start">
+                                    <div class="bg-yellow bg-opacity-20 p-2 rounded-full mr-4">
+                                        <i class="fas fa-video text-yellow"></i>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-bold">Live Q&A Session</h4>
+                                        <p class="text-sm text-gray-400 mb-1">Sustainable Architecture</p>
+                                        <p class="text-xs text-yellow">In 2 days</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start">
+                                    <div class="bg-yellow bg-opacity-20 p-2 rounded-full mr-4">
+                                        <i class="fas fa-book text-yellow"></i>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-bold">Reading: Chapter 5</h4>
+                                        <p class="text-sm text-gray-400 mb-1">Urban Planning</p>
+                                        <p class="text-xs text-yellow">Due in 4 days</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mt-6 pt-4 border-t border-gray-700">
+                                <button class="w-full bg-yellow bg-opacity-20 text-yellow py-2 rounded-lg font-medium hover:bg-opacity-30 transition duration-300">
+                                    <i class="fas fa-plus mr-2"></i> Add to Calendar
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Continue Learning -->
+                    <div class="glass-dark p-6 rounded-xl mb-8">
+                        <div class="flex justify-between items-center mb-6">
+                            <h3 class="text-xl font-bold">Continue Learning</h3>
+                            <a href="#" class="text-yellow text-sm hover:underline">View all courses</a>
+                        </div>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            <!-- Course 1 -->
+                            <div class="glass-dark rounded-xl overflow-hidden hover-scale">
+                                <div class="relative">
+                                    <img src="https://images.unsplash.com/photo-1487958449943-2429e8be8625?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80" alt="Modern Architecture" class="w-full h-40 object-cover">
+                                    <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black to-transparent p-4">
+                                        <h4 class="font-bold">Modern Architectural Design</h4>
+                                        <div class="flex justify-between items-center mt-2">
+                                            <div class="text-xs text-gray-300">
+                                                <i class="fas fa-play-circle mr-1"></i> Lesson 5 of 12
+                                            </div>
+                                            <div class="text-xs text-yellow">65% complete</div>
+                                        </div>
+                                        <div class="progress-container mt-2">
+                                            <div class="progress-bar" style="width: 65%"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="p-4">
+                                    <div class="flex justify-between items-center mb-3">
+                                        <div class="flex items-center text-yellow text-sm">
+                                            <i class="fas fa-star mr-1"></i> 4.9
+                                        </div>
+                                        <div class="text-xs text-gray-400">
+                                            <i class="far fa-clock mr-1"></i> 32h total
+                                        </div>
+                                    </div>
+                                    <p class="text-sm text-gray-400 mb-4">Master the principles of contemporary architectural design with real-world projects.</p>
+                                    <button class="w-full bg-yellow text-black py-2 rounded-lg font-medium hover:bg-opacity-90 transition duration-300">
+                                        Continue Course
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <!-- Course 2 -->
+                            <div class="glass-dark rounded-xl overflow-hidden hover-scale">
+                                <div class="relative">
+                                    <img src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80" alt="Sustainable Architecture" class="w-full h-40 object-cover">
+                                    <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black to-transparent p-4">
+                                        <h4 class="font-bold">Sustainable Architecture</h4>
+                                        <div class="flex justify-between items-center mt-2">
+                                            <div class="text-xs text-gray-300">
+                                                <i class="fas fa-play-circle mr-1"></i> Lesson 3 of 10
+                                            </div>
+                                            <div class="text-xs text-yellow">30% complete</div>
+                                        </div>
+                                        <div class="progress-container mt-2">
+                                            <div class="progress-bar" style="width: 30%"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="p-4">
+                                    <div class="flex justify-between items-center mb-3">
+                                        <div class="flex items-center text-yellow text-sm">
+                                            <i class="fas fa-star mr-1"></i> 4.8
+                                        </div>
+                                        <div class="text-xs text-gray-400">
+                                            <i class="far fa-clock mr-1"></i> 28h total
+                                        </div>
+                                    </div>
+                                    <p class="text-sm text-gray-400 mb-4">Learn to design eco-friendly buildings that reduce environmental impact.</p>
+                                    <button class="w-full bg-yellow text-black py-2 rounded-lg font-medium hover:bg-opacity-90 transition duration-300">
+                                        Continue Course
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <!-- Course 3 -->
+                            <div class="glass-dark rounded-xl overflow-hidden hover-scale">
+                                <div class="relative">
+                                    <img src="https://images.unsplash.com/photo-1487958449943-2429e8be8625?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80" alt="Urban Planning" class="w-full h-40 object-cover">
+                                    <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black to-transparent p-4">
+                                        <h4 class="font-bold">Urban Planning & Design</h4>
+                                        <div class="flex justify-between items-center mt-2">
+                                            <div class="text-xs text-gray-300">
+                                                <i class="fas fa-play-circle mr-1"></i> Lesson 8 of 15
+                                            </div>
+                                            <div class="text-xs text-yellow">53% complete</div>
+                                        </div>
+                                        <div class="progress-container mt-2">
+                                            <div class="progress-bar" style="width: 53%"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="p-4">
+                                    <div class="flex justify-between items-center mb-3">
+                                        <div class="flex items-center text-yellow text-sm">
+                                            <i class="fas fa-star mr-1"></i> 4.7
+                                        </div>
+                                        <div class="text-xs text-gray-400">
+                                            <i class="far fa-clock mr-1"></i> 40h total
+                                        </div>
+                                    </div>
+                                    <p class="text-sm text-gray-400 mb-4">Create functional and beautiful urban spaces with comprehensive planning techniques.</p>
+                                    <button class="w-full bg-yellow text-black py-2 rounded-lg font-medium hover:bg-opacity-90 transition duration-300">
+                                        Continue Course
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Recent Activity -->
+                    <div class="glass-dark p-6 rounded-xl">
+                        <div class="flex justify-between items-center mb-6">
+                            <h3 class="text-xl font-bold">Recent Activity</h3>
+                            <a href="#" class="text-yellow text-sm hover:underline">View all activity</a>
+                        </div>
+                        
+                        <div class="space-y-4">
+                            <div class="flex items-start">
+                                <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="User" class="w-10 h-10 rounded-full object-cover mr-4">
+                                <div class="flex-1">
+                                    <div class="flex justify-between items-start">
+                                        <div>
+                                            <h4 class="font-bold">Sarah Johnson</h4>
+                                            <p class="text-sm text-gray-400">Replied to your question in "Modern Design - Module 3"</p>
+                                        </div>
+                                        <span class="text-xs text-gray-500">2h ago</span>
+                                    </div>
+                                    <div class="glass-dark mt-2 p-3 rounded-lg">
+                                        <p class="text-sm">"That's a great question! The key difference between contemporary and modern architecture is..."</p>
+                                    </div>
+                                    <div class="mt-2 flex space-x-3">
+                                        <button class="text-xs text-gray-400 hover:text-yellow transition duration-300">
+                                            <i class="far fa-thumbs-up mr-1"></i> Like
+                                        </button>
+                                        <button class="text-xs text-gray-400 hover:text-yellow transition duration-300">
+                                            <i class="far fa-comment mr-1"></i> Reply
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-start">
+                                <div class="w-10 h-10 bg-yellow bg-opacity-20 rounded-full flex items-center justify-center mr-4">
+                                    <i class="fas fa-certificate text-yellow"></i>
+                                </div>
+                                <div class="flex-1">
+                                    <div class="flex justify-between items-start">
+                                        <div>
+                                            <h4 class="font-bold">Certificate Earned</h4>
+                                            <p class="text-sm text-gray-400">You completed "Introduction to Architectural Drawing"</p>
+                                        </div>
+                                        <span class="text-xs text-gray-500">1d ago</span>
+                                    </div>
+                                    <div class="mt-3">
+                                        <button class="text-xs bg-yellow text-black px-3 py-1 rounded-full font-medium hover:bg-opacity-90 transition duration-300">
+                                            Download Certificate
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-start">
+                                <img src="https://randomuser.me/api/portraits/men/75.jpg" alt="User" class="w-10 h-10 rounded-full object-cover mr-4">
+                                <div class="flex-1">
+                                    <div class="flex justify-between items-start">
+                                        <div>
+                                            <h4 class="font-bold">Michael Chen</h4>
+                                            <p class="text-sm text-gray-400">Started following you</p>
+                                        </div>
+                                        <span class="text-xs text-gray-500">2d ago</span>
+                                    </div>
+                                    <div class="mt-3">
+                                        <button class="text-xs bg-yellow text-black px-3 py-1 rounded-full font-medium hover:bg-opacity-90 transition duration-300">
+                                            Follow Back
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Course Player (Hidden by default) -->
+            <section id="course-player" class="hidden fixed inset-0 bg-black z-50 overflow-y-auto">
+                <div class="container mx-auto px-6 py-20">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-2xl font-bold">Modern Architectural Design</h2>
+                        <button id="close-player" class="text-white hover:text-yellow transition duration-300">
+                            <i class="fas fa-times text-2xl"></i>
+                        </button>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+                        <!-- Video Player -->
+                        <div class="lg:col-span-3">
+                            <div class="video-container mb-6">
+                                <iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ" frameborder="0" allowfullscreen></iframe>
+                            </div>
+                            
+                            <div class="glass-dark p-6 rounded-xl mb-6">
+                                <h3 class="text-xl font-bold mb-4">Module 3: Contemporary Design Principles</h3>
+                                <div class="flex items-center text-sm text-gray-400 mb-4">
+                                    <span class="mr-4"><i class="far fa-clock mr-1"></i> 32 min</span>
+                                    <span><i class="fas fa-eye mr-1"></i> 1,245 views</span>
+                                </div>
+                                <p class="text-gray-300 mb-6">
+                                    In this lesson, we'll explore the fundamental principles that define contemporary architectural design. You'll learn how to incorporate these principles into your own projects while maintaining functionality and aesthetic appeal.
+                                </p>
+                                
+                                <div class="flex space-x-4">
+                                    <button class="flex-1 bg-yellow text-black py-2 rounded-lg font-medium hover:bg-opacity-90 transition duration-300">
+                                        <i class="fas fa-download mr-2"></i> Download Resources
+                                    </button>
+                                    <button class="flex-1 bg-gray-700 text-white py-2 rounded-lg font-medium hover:bg-gray-600 transition duration-300">
+                                        <i class="fas fa-bookmark mr-2"></i> Save for Later
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="glass-dark p-6 rounded-xl">
+                                <h3 class="text-xl font-bold mb-4">Discussion</h3>
+                                <div class="mb-6">
+                                    <textarea class="w-full bg-gray-900 bg-opacity-50 border border-gray-700 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-yellow focus:border-transparent" rows="3" placeholder="Ask a question or share your thoughts..."></textarea>
+                                    <div class="flex justify-end mt-2">
+                                        <button class="bg-yellow text-black px-4 py-2 rounded-lg font-medium hover:bg-opacity-90 transition duration-300">
+                                            Post Comment
+                                        </button>
+                                    </div>
+                                </div>
+                                
+                                <div class="space-y-6">
+                                    <div class="flex items-start">
+                                        <img src="https://randomuser.me/api/portraits/women/32.jpg" alt="User" class="w-10 h-10 rounded-full object-cover mr-4">
+                                        <div class="flex-1">
+                                            <div class="flex justify-between items-start">
+                                                <div>
+                                                    <h4 class="font-bold">Emma Wilson</h4>
+                                                    <p class="text-sm text-gray-400">2 days ago</p>
+                                                </div>
+                                                <button class="text-gray-400 hover:text-yellow transition duration-300">
+                                                    <i class="fas fa-ellipsis-h"></i>
+                                                </button>
+                                            </div>
+                                            <p class="text-gray-300 mt-2">
+                                                How do contemporary design principles differ from modern architecture? I'm having trouble distinguishing between the two.
+                                            </p>
+                                            <div class="mt-3 flex space-x-4">
+                                                <button class="text-sm text-gray-400 hover:text-yellow transition duration-300">
+                                                    <i class="far fa-thumbs-up mr-1"></i> 5 Likes
+                                                </button>
+                                                <button class="text-sm text-gray-400 hover:text-yellow transition duration-300">
+                                                    <i class="far fa-comment mr-1"></i> Reply
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="flex items-start pl-14">
+                                        <img src="https://randomuser.me/api/portraits/men/22.jpg" alt="User" class="w-10 h-10 rounded-full object-cover mr-4">
+                                        <div class="flex-1">
+                                            <div class="flex justify-between items-start">
+                                                <div>
+                                                    <h4 class="font-bold">Zaki (Instructor)</h4>
+                                                    <p class="text-sm text-gray-400">1 day ago</p>
+                                                </div>
+                                                <button class="text-gray-400 hover:text-yellow transition duration-300">
+                                                    <i class="fas fa-ellipsis-h"></i>
+                                                </button>
+                                            </div>
+                                            <p class="text-gray-300 mt-2">
+                                                Great question, Emma! While modern architecture refers specifically to the early-to-mid 20th century movement (think Bauhaus, Le Corbusier), contemporary architecture is more fluid and refers to designs of the present day that incorporate current styles, technologies, and materials.
+                                            </p>
+                                            <div class="mt-3 flex space-x-4">
+                                                <button class="text-sm text-gray-400 hover:text-yellow transition duration-300">
+                                                    <i class="far fa-thumbs-up mr-1"></i> 12 Likes
+                                                </button>
+                                                <button class="text-sm text-gray-400 hover:text-yellow transition duration-300">
+                                                    <i class="far fa-comment mr-1"></i> Reply
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Course Navigation -->
+                        <div class="glass-dark p-6 rounded-xl h-fit sticky top-6">
+                            <h3 class="text-lg font-bold mb-4">Course Content</h3>
+                            <div class="space-y-2">
+                                <div>
+                                    <button class="w-full flex justify-between items-center py-2 px-3 bg-gray-800 rounded-lg">
+                                        <span>Module 1: Introduction</span>
+                                        <i class="fas fa-chevron-down text-xs"></i>
+                                    </button>
+                                    <div class="pl-4 mt-2 space-y-1">
+                                        <a href="#" class="block py-2 px-3 text-sm text-gray-400 hover:bg-gray-800 rounded-lg transition duration-300">
+                                            <span class="lesson-complete pl-5">Course Overview</span>
+                                            <span class="block text-xs mt-1">5 min</span>
+                                        </a>
+                                        <a href="#" class="block py-2 px-3 text-sm text-gray-400 hover:bg-gray-800 rounded-lg transition duration-300">
+                                            <span class="lesson-complete pl-5">Key Concepts</span>
+                                            <span class="block text-xs mt-1">12 min</span>
+                                        </a>
+                                    </div>
+                                </div>
+                                
+                                <div>
+                                    <button class="w-full flex justify-between items-center py-2 px-3 bg-gray-800 rounded-lg">
+                                        <span>Module 2: Historical Context</span>
+                                        <i class="fas fa-chevron-down text-xs"></i>
+                                    </button>
+                                    <div class="pl-4 mt-2 space-y-1">
+                                        <a href="#" class="block py-2 px-3 text-sm text-gray-400 hover:bg-gray-800 rounded-lg transition duration-300">
+                                            <span class="lesson-complete pl-5">Modernism Roots</span>
+                                            <span class="block text-xs mt-1">18 min</span>
+                                        </a>
+                                        <a href="#" class="block py-2 px-3 text-sm text-gray-400 hover:bg-gray-800 rounded-lg transition duration-300">
+                                            <span class="lesson-complete pl-5">Postmodern Influences</span>
+                                            <span class="block text-xs mt-1">22 min</span>
+                                        </a>
+                                    </div>
+                                </div>
+                                
+                                <div>
+                                    <button class="w-full flex justify-between items-center py-2 px-3 bg-gray-800 rounded-lg">
+                                        <span>Module 3: Contemporary Principles</span>
+                                        <i class="fas fa-chevron-down text-xs"></i>
+                                    </button>
+                                    <div class="pl-4 mt-2 space-y-1">
+                                        <a href="#" class="block py-2 px-3 text-sm text-gray-400 hover:bg-gray-800 rounded-lg transition duration-300">
+                                            <span class="lesson-complete pl-5">Form and Function</span>
+                                            <span class="block text-xs mt-1">15 min</span>
+                                        </a>
+                                        <a href="#" class="block py-2 px-3 text-sm text-gray-400 hover:bg-gray-800 rounded-lg transition duration-300">
+                                            <span class="lesson-complete pl-5">Material Innovation</span>
+                                            <span class="block text-xs mt-1">20 min</span>
+                                        </a>
+                                        <a href="#" class="block py-2 px-3 text-sm bg-yellow bg-opacity-20 text-yellow rounded-lg">
+                                            <span class="pl-5">Current Lesson: Design Principles</span>
+                                            <span class="block text-xs mt-1">32 min</span>
+                                        </a>
+                                        <a href="#" class="block py-2 px-3 text-sm text-gray-400 hover:bg-gray-800 rounded-lg transition duration-300">
+                                            <span class="pl-5">Sustainability Integration</span>
+                                            <span class="block text-xs mt-1">Coming soon</span>
+                                        </a>
+                                    </div>
+                                </div>
+                                
+                                <div>
+                                    <button class="w-full flex justify-between items-center py-2 px-3 bg-gray-800 rounded-lg">
+                                        <span>Module 4: Practical Applications</span>
+                                        <i class="fas fa-chevron-down text-xs"></i>
+                                    </button>
+                                    <div class="pl-4 mt-2 space-y-1">
+                                        <a href="#" class="block py-2 px-3 text-sm text-gray-400 hover:bg-gray-800 rounded-lg transition duration-300">
+                                            <span class="pl-5">Residential Projects</span>
+                                            <span class="block text-xs mt-1">Locked</span>
+                                        </a>
+                                        <a href="#" class="block py-2 px-3 text-sm text-gray-400 hover:bg-gray-800 rounded-lg transition duration-300">
+                                            <span class="pl-5">Commercial Spaces</span>
+                                            <span class="block text-xs mt-1">Locked</span>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="mt-6 pt-4 border-t border-gray-700">
+                                <div class="flex justify-between items-center mb-2">
+                                    <span class="text-sm">Course Progress</span>
+                                    <span class="text-sm text-yellow">42%</span>
+                                </div>
+                                <div class="progress-container">
+                                    <div class="progress-bar" style="width: 42%"></div>
+                                </div>
+                                <button class="w-full bg-yellow text-black py-2 rounded-lg font-medium mt-4 hover:bg-opacity-90 transition duration-300">
+                                    Complete Lesson
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        // Mobile menu toggle
+        const mobileMenuToggle = document.getElementById('mobile-menu-toggle');
+        const mobileMenu = document.getElementById('mobile-menu');
+        
+        mobileMenuToggle.addEventListener('click', function() {
+            mobileMenu.classList.toggle('hidden');
+        });
+        
+        // Notification dropdown
+        const notificationBtn = document.getElementById('notification-btn');
+        const notificationDropdown = document.getElementById('notification-dropdown');
+        
+        notificationBtn.addEventListener('click', function() {
+            notificationDropdown.classList.toggle('hidden');
+        });
+        
+        // Profile dropdown
+        const profileBtn = document.getElementById('profile-btn');
+        const profileDropdown = document.getElementById('profile-dropdown');
+        
+        profileBtn.addEventListener('click', function() {
+            profileDropdown.classList.toggle('hidden');
+        });
+        
+        // Close dropdowns when clicking outside
+        document.addEventListener('click', function(event) {
+            if (!notificationBtn.contains(event.target) && !notificationDropdown.contains(event.target)) {
+                notificationDropdown.classList.add('hidden');
+            }
+            
+            if (!profileBtn.contains(event.target) && !profileDropdown.contains(event.target)) {
+                profileDropdown.classList.add('hidden');
+            }
+        });
+        
+        // Dark mode toggle
+        const toggle = document.getElementById('toggle');
+        toggle.addEventListener('change', function() {
+            if (this.checked) {
+                document.documentElement.classList.add('dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+            }
+        });
+        
+        // Course player toggle
+        const coursePlayer = document.getElementById('course-player');
+        const closePlayer = document.getElementById('close-player');
+        const continueButtons = document.querySelectorAll('button:contains("Continue Course")');
+        
+        continueButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                coursePlayer.classList.remove('hidden');
+                document.body.style.overflow = 'hidden';
+            });
+        });
+        
+        closePlayer.addEventListener('click', function() {
+            coursePlayer.classList.add('hidden');
+            document.body.style.overflow = 'auto';
+        });
+        
+        // Progress Chart
+        const progressCtx = document.getElementById('progressChart').getContext('2d');
+        const progressChart = new Chart(progressCtx, {
+            type: 'line',
+            data: {
+                labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                datasets: [{
+                    label: 'Minutes Learned',
+                    data: [30, 45, 60, 35, 50, 20, 40],
+                    borderColor: '#FFD700',
+                    backgroundColor: 'rgba(255, 215, 0, 0.1)',
+                    borderWidth: 2,
+                    tension: 0.4,
+                    fill: true,
+                    pointBackgroundColor: '#FFD700',
+                    pointBorderColor: '#000',
+                    pointBorderWidth: 1,
+                    pointRadius: 4,
+                    pointHoverRadius: 6
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: {
+                            color: 'rgba(255, 255, 255, 0.1)'
+                        },
+                        ticks: {
+                            color: 'rgba(255, 255, 255, 0.7)'
+                        }
+                    },
+                    x: {
+                        grid: {
+                            color: 'rgba(255, 255, 255, 0.1)'
+                        },
+                        ticks: {
+                            color: 'rgba(255, 255, 255, 0.7)'
+                        }
+                    }
+                }
+            }
+        });
+        
+        // GSAP Animations
+        gsap.registerPlugin(ScrollTrigger);
+        
+        // Animate elements on scroll
+        gsap.utils.toArray('.hover-scale').forEach(element => {
+            gsap.from(element, {
+                scrollTrigger: {
+                    trigger: element,
+                    start: "top 80%",
+                    toggleActions: "play none none none"
+                },
+                opacity: 0,
+                y: 50,
+                duration: 0.8,
+                ease: "power2.out"
+            });
+        });
+        
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                const targetId = this.getAttribute('href');
+                const targetElement = document.querySelector(targetId);
+                
+                if (targetElement) {
+                    window.scrollTo({
+                        top: targetElement.offsetTop - 80,
+                        behavior: 'smooth'
+                    });
+$0
+                    
+                    // Close mobile menu if open
+                    if (!mobileMenu.classList.contains('hidden')) {
+                        mobileMenu.classList.add('hidden');
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>
