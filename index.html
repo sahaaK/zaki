@@ -3,100 +3,112 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Zaki Architect | Futuristic Engineering Courses</title>
+    <title>Miimi Store | Order Management</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/gsap.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/ScrollTrigger.min.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-firestore-compat.js"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700;900&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap');
         
         :root {
-            --primary-dark: #0a0a0a;
-            --primary-yellow: #FFD700;
-            --glass-dark: rgba(10, 10, 10, 0.7);
-            --glass-yellow: rgba(255, 215, 0, 0.2);
+            --primary: #ff6b8b;
+            --secondary: #ffb3c6;
+            --accent: #ff8fab;
+            --glass: rgba(255, 255, 255, 0.2);
+            --text: #333;
         }
         
         body {
-            font-family: 'Montserrat', sans-serif;
-            background-color: var(--primary-dark);
-            color: white;
+            font-family: 'Poppins', sans-serif;
+            color: var(--text);
+            background: linear-gradient(135deg, #fff5f5 0%, #fff 100%);
             overflow-x: hidden;
         }
         
-        .glass-dark {
-            background: var(--glass-dark);
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Playfair Display', serif;
+        }
+        
+        .glass-effect {
+            background: var(--glass);
             backdrop-filter: blur(10px);
             -webkit-backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.3);
         }
         
-        .glass-yellow {
-            background: var(--glass-yellow);
-            backdrop-filter: blur(5px);
-            -webkit-backdrop-filter: blur(5px);
-            border: 1px solid rgba(255, 215, 0, 0.3);
+        .gradient-text {
+            background: linear-gradient(90deg, #ff6b8b, #ff8fab, #ffb3c6);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
         }
         
-        .text-yellow {
-            color: var(--primary-yellow);
-        }
-        
-        .bg-yellow {
-            background-color: var(--primary-yellow);
-        }
-        
-        .border-yellow {
-            border-color: var(--primary-yellow);
-        }
-        
-        .parallax {
-            background-attachment: fixed;
-            background-position: center;
-            background-repeat: no-repeat;
-            background-size: cover;
-        }
-        
-        .skewed {
-            transform: skewY(-3deg);
-        }
-        
-        .unskewed {
-            transform: skewY(3deg);
-        }
-        
-        .hover-scale {
-            transition: transform 0.3s ease;
-        }
-        
-        .hover-scale:hover {
-            transform: scale(1.05);
-        }
-        
-        .course-card {
-            perspective: 1000px;
-        }
-        
-        .course-inner {
-            transition: transform 0.8s;
+        .order-card {
+            transition: all 0.3s ease;
             transform-style: preserve-3d;
         }
         
-        .course-card:hover .course-inner {
-            transform: rotateY(180deg);
+        .order-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(255, 107, 139, 0.2), 0 10px 10px -5px rgba(255, 107, 139, 0.1);
         }
         
-        .course-front, .course-back {
-            backface-visibility: hidden;
+        .status-badge {
+            padding: 0.35rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 600;
         }
         
-        .course-back {
-            transform: rotateY(180deg);
+        .status-pending {
+            background-color: #ffedd5;
+            color: #f59e0b;
+        }
+        
+        .status-approved {
+            background-color: #d1fae5;
+            color: #059669;
+        }
+        
+        .status-delivered {
+            background-color: #dbeafe;
+            color: #3b82f6;
+        }
+        
+        .status-cancelled {
+            background-color: #fee2e2;
+            color: #ef4444;
+        }
+        
+        .loading-spinner {
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
         }
         
         .floating {
-            animation: floating 3s ease-in-out infinite;
+            animation: floating 6s ease-in-out infinite;
+        }
+        
+        .floating-2 {
+            animation: floating 5s ease-in-out infinite 1s;
+        }
+        
+        .floating-3 {
+            animation: floating 7s ease-in-out infinite 2s;
         }
         
         @keyframes floating {
@@ -105,868 +117,753 @@
             100% { transform: translateY(0px); }
         }
         
-        .pulse {
-            animation: pulse 2s infinite;
+        .order-details-modal {
+            transition: all 0.3s ease;
         }
         
-        @keyframes pulse {
-            0% { box-shadow: 0 0 0 0 rgba(255, 215, 0, 0.7); }
-            70% { box-shadow: 0 0 0 15px rgba(255, 215, 0, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(255, 215, 0, 0); }
+        .order-details-modal.show {
+            opacity: 1;
+            transform: translateY(0);
         }
         
-        .typing {
-            overflow: hidden;
-            border-right: 3px solid var(--primary-yellow);
-            white-space: nowrap;
-            animation: typing 3.5s steps(40, end), blink-caret 0.75s step-end infinite;
+        /* Custom scrollbar */
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
         }
         
-        @keyframes typing {
-            from { width: 0 }
-            to { width: 100% }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
         }
         
-        @keyframes blink-caret {
-            from, to { border-color: transparent }
-            50% { border-color: var(--primary-yellow); }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #ffb3c6;
+            border-radius: 10px;
         }
         
-        .grid-pattern {
-            background-image: 
-                linear-gradient(rgba(255, 215, 0, 0.1) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(255, 215, 0, 0.1) 1px, transparent 1px);
-            background-size: 30px 30px;
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #ff6b8b;
+        }
+        
+        .whatsapp-btn {
+            background: #25D366;
+            transition: all 0.3s ease;
+        }
+        
+        .whatsapp-btn:hover {
+            background: #128C7E;
+            transform: translateY(-2px);
+        }
+        
+        .modal-overlay {
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(5px);
         }
     </style>
 </head>
-<body class="relative">
-
-
-    <!-- Navigation -->
-    <nav class="glass-dark fixed w-full z-40 py-4 px-6 shadow-lg">
-        <div class="container mx-auto flex justify-between items-center">
-            <div class="flex items-center">
-                <div class="w-10 h-10 bg-yellow rounded-full flex items-center justify-center mr-3">
-                    <i class="fas fa-drafting-compass text-black text-xl"></i>
-                </div>
-                <h1 class="text-2xl font-bold text-yellow">ZAKI<span class="text-white">ARCHITECT</span></h1>
-            </div>
-            
-            <div class="hidden md:flex space-x-8">
-                <a href="#home" class="text-white hover:text-yellow transition duration-300">Home</a>
-                <a href="#courses" class="text-white hover:text-yellow transition duration-300">Courses</a>
-                <a href="#about" class="text-white hover:text-yellow transition duration-300">About</a>
-                <a href="#testimonials" class="text-white hover:text-yellow transition duration-300">Testimonials</a>
-                <a href="#contact" class="text-white hover:text-yellow transition duration-300">Contact</a>
-            </div>
-            
-            <div class="flex items-center space-x-4">
-                <button class="bg-yellow text-black px-4 py-2 rounded-full font-semibold hover:bg-opacity-90 transition duration-300 hidden md:block">
-                    <a href="dash.html" class="bg-yellow text-black px-4 py-2 rounded-full font-semibold hover:bg-opacity-90 transition duration-300 hidden md:block text-center">Sign In</a>
-                <button id="menu-toggle" class="md:hidden text-white focus:outline-none">
-                    <i class="fas fa-bars text-2xl"></i>
-                </button>
-            </div>
-        </div>
+<body class="min-h-screen">
+    <!-- Firebase Initialization -->
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyBn95WitCAdzrDDu8YJiD5manYUR9ycJ_w",
+            authDomain: "mimi-8bb5b.firebaseapp.com",
+            projectId: "mimi-8bb5b",
+            storageBucket: "mimi-8bb5b.firebasestorage.app",
+            messagingSenderId: "730534507136",
+            appId: "1:730534507136:web:38fa73bdc7f0875b936c65",
+            measurementId: "G-VPSF0D1H5B"
+        };
         
-        <!-- Mobile Menu -->
-        <div id="mobile-menu" class="md:hidden hidden glass-dark absolute top-full left-0 w-full py-4 px-6 shadow-lg">
-            <div class="flex flex-col space-y-4">
-                <a href="#home" class="text-white hover:text-yellow transition duration-300">Home</a>
-                <a href="#courses" class="text-white hover:text-yellow transition duration-300">Courses</a>
-                <a href="#about" class="text-white hover:text-yellow transition duration-300">About</a>
-                <a href="#testimonials" class="text-white hover:text-yellow transition duration-300">Testimonials</a>
-                <a href="#contact" class="text-white hover:text-yellow transition duration-300">Contact</a>
-                <button class="bg-yellow text-black px-4 py-2 rounded-full font-semibold hover:bg-opacity-90 transition duration-300 w-full">
-                    <a href="dash.html" class="bg-yellow text-black px-4 py-2 rounded-full font-semibold hover:bg-opacity-90 transition duration-300 w-full text-center block">Sign In</a>
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+    </script>
+    
+    <!-- Floating background elements -->
+    <div class="fixed inset-0 overflow-hidden pointer-events-none z-0">
+        <div class="absolute top-1/4 left-1/4 w-64 h-64 rounded-full bg-pink-100 opacity-20 blur-3xl floating"></div>
+        <div class="absolute top-2/3 right-1/4 w-80 h-80 rounded-full bg-pink-200 opacity-15 blur-3xl floating-2"></div>
+        <div class="absolute top-1/3 right-1/3 w-96 h-96 rounded-full bg-pink-100 opacity-10 blur-3xl floating-3"></div>
+    </div>
+    
+    <!-- Navigation -->
+    <nav class="glass-effect fixed w-full z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16 items-center">
+                <div class="flex items-center">
+                    <a href="#" class="text-2xl font-bold gradient-text">Miimi</a>
+                </div>
+                <div class="hidden md:flex space-x-8">
+                    <a href="#" class="text-gray-700 hover:text-pink-500 transition">Home</a>
+                    <a href="#orders" class="text-gray-700 hover:text-pink-500 transition">Orders</a>
+                    <a href="#products" class="text-gray-700 hover:text-pink-500 transition">Products</a>
+                    <a href="#analytics" class="text-gray-700 hover:text-pink-500 transition">Analytics</a>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <button class="md:hidden text-gray-700 hover:text-pink-500 transition" id="mobile-menu-btn">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                </div>
             </div>
         </div>
     </nav>
-
-    <!-- Hero Section -->
-    <section id="home" class="min-h-screen flex items-center justify-center relative overflow-hidden parallax" style="background-image: url('https://images.unsplash.com/photo-1487958449943-2429e8be8625?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80');">
-        <div class="absolute inset-0 bg-black bg-opacity-60"></div>
-        <div class="container mx-auto px-6 relative z-10 text-center">
-            <div class="glass-dark rounded-2xl p-8 md:p-12 inline-block max-w-4xl">
-                <h1 class="text-4xl md:text-6xl font-bold mb-6 typing">
-                    <span class="text-yellow">DESIGN</span> YOUR FUTURE
-                </h1>
-                <p class="text-lg md:text-xl mb-8 text-gray-300">
-                    Master architectural engineering with Zaki's cutting-edge online courses. 
-                    Learn from industry experts and transform your creative vision into reality.
-                </p>
-                <div class="flex flex-col md:flex-row justify-center space-y-4 md:space-y-0 md:space-x-6">
-                    <button class="bg-yellow text-black px-8 py-4 rounded-full font-bold text-lg hover:bg-opacity-90 transition duration-300 hover-scale">
-                        Explore Courses
-                    </button>
-                    <button class="glass-yellow border border-yellow px-8 py-4 rounded-full font-bold text-lg hover:bg-opacity-30 transition duration-300 hover-scale">
-                        Watch Demo
-                    </button>
-                </div>
+    
+    <!-- Mobile Menu -->
+    <div id="mobile-menu" class="hidden fixed inset-0 bg-white bg-opacity-95 z-50 flex flex-col items-center justify-center space-y-8">
+        <button id="close-menu" class="absolute top-4 right-4 text-2xl text-gray-700 hover:text-pink-500">
+            <i class="fas fa-times"></i>
+        </button>
+        <a href="#" class="text-2xl text-gray-700 hover:text-pink-500 transition">Home</a>
+        <a href="#orders" class="text-2xl text-gray-700 hover:text-pink-500 transition">Orders</a>
+        <a href="#products" class="text-2xl text-gray-700 hover:text-pink-500 transition">Products</a>
+        <a href="#analytics" class="text-2xl text-gray-700 hover:text-pink-500 transition">Analytics</a>
+    </div>
+    
+    <!-- Orders Dashboard -->
+    <section id="orders" class="pt-24 pb-16 px-4 max-w-7xl mx-auto">
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
+            <div>
+                <h1 class="text-3xl md:text-4xl font-bold mb-2">Order Management</h1>
+                <p class="text-gray-600">Manage and track customer orders</p>
             </div>
-            
-            <div class="mt-16 grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto">
-                <div class="glass-dark p-4 rounded-xl text-center hover-scale">
-                    <i class="fas fa-users text-yellow text-3xl mb-2"></i>
-                    <h3 class="font-bold">10,000+</h3>
-                    <p class="text-sm text-gray-300">Students</p>
+            <div class="flex space-x-4 mt-4 md:mt-0">
+                <div class="relative">
+                    <select id="status-filter" class="px-4 py-2 pr-8 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-pink-500 appearance-none">
+                        <option value="all">All Orders</option>
+                        <option value="pending">Pending</option>
+                        <option value="approved">Approved</option>
+                        <option value="delivered">Delivered</option>
+                        <option value="cancelled">Cancelled</option>
+                    </select>
+                    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
                 </div>
-                <div class="glass-dark p-4 rounded-xl text-center hover-scale">
-                    <i class="fas fa-certificate text-yellow text-3xl mb-2"></i>
-                    <h3 class="font-bold">50+</h3>
-                    <p class="text-sm text-gray-300">Courses</p>
-                </div>
-                <div class="glass-dark p-4 rounded-xl text-center hover-scale">
-                    <i class="fas fa-chalkboard-teacher text-yellow text-3xl mb-2"></i>
-                    <h3 class="font-bold">25+</h3>
-                    <p class="text-sm text-gray-300">Instructors</p>
-                </div>
-                <div class="glass-dark p-4 rounded-xl text-center hover-scale">
-                    <i class="fas fa-globe text-yellow text-3xl mb-2"></i>
-                    <h3 class="font-bold">100+</h3>
-                    <p class="text-sm text-gray-300">Countries</p>
+                <div class="relative">
+                    <input type="text" id="search-orders" placeholder="Search orders..." class="px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-pink-500">
+                    <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                        <i class="fas fa-search text-gray-400"></i>
+                    </div>
                 </div>
             </div>
         </div>
         
-        <div class="absolute bottom-10 left-0 right-0 flex justify-center">
-            <a href="#courses" class="text-white animate-bounce">
-                <i class="fas fa-chevron-down text-2xl"></i>
-            </a>
-        </div>
-    </section>
-
-    <!-- Featured Courses -->
-    <section id="courses" class="py-20 relative overflow-hidden">
-        <div class="absolute inset-0 grid-pattern"></div>
-        <div class="container mx-auto px-6 relative">
-            <div class="text-center mb-16">
-                <h2 class="text-3xl md:text-5xl font-bold mb-4">
-                    <span class="text-yellow">FEATURED</span> COURSES
-                </h2>
-                <p class="text-gray-400 max-w-2xl mx-auto">
-                    Explore our most popular architectural engineering courses designed to take your skills to the next level.
-                </p>
+        <!-- Stats Overview -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <div class="bg-white rounded-xl p-6 shadow-md">
+                <div class="flex items-center">
+                    <div class="p-3 rounded-lg bg-pink-100 text-pink-500 mr-4">
+                        <i class="fas fa-shopping-bag text-xl"></i>
+                    </div>
+                    <div>
+                        <p class="text-gray-600">Total Orders</p>
+                        <h3 class="text-2xl font-bold" id="total-orders">0</h3>
+                    </div>
+                </div>
             </div>
             
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                <!-- Course 1 -->
-                <div class="course-card">
-                    <div class="course-inner h-full">
-                        <div class="course-front glass-dark rounded-2xl overflow-hidden h-full hover-scale">
-                            <div class="relative">
-                                <img src="https://images.unsplash.com/photo-1487958449943-2429e8be8625?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80" alt="Modern Architecture" class="w-full h-48 object-cover">
-                                <div class="absolute top-4 right-4 bg-yellow text-black px-3 py-1 rounded-full text-sm font-bold">
-                                    BESTSELLER
-                                </div>
+            <div class="bg-white rounded-xl p-6 shadow-md">
+                <div class="flex items-center">
+                    <div class="p-3 rounded-lg bg-yellow-100 text-yellow-500 mr-4">
+                        <i class="fas fa-clock text-xl"></i>
+                    </div>
+                    <div>
+                        <p class="text-gray-600">Pending</p>
+                        <h3 class="text-2xl font-bold" id="pending-orders">0</h3>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="bg-white rounded-xl p-6 shadow-md">
+                <div class="flex items-center">
+                    <div class="p-3 rounded-lg bg-green-100 text-green-500 mr-4">
+                        <i class="fas fa-check-circle text-xl"></i>
+                    </div>
+                    <div>
+                        <p class="text-gray-600">Approved</p>
+                        <h3 class="text-2xl font-bold" id="approved-orders">0</h3>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="bg-white rounded-xl p-6 shadow-md">
+                <div class="flex items-center">
+                    <div class="p-3 rounded-lg bg-blue-100 text-blue-500 mr-4">
+                        <i class="fas fa-truck text-xl"></i>
+                    </div>
+                    <div>
+                        <p class="text-gray-600">Delivered</p>
+                        <h3 class="text-2xl font-bold" id="delivered-orders">0</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Orders List -->
+        <div class="bg-white rounded-xl shadow-md overflow-hidden">
+            <div class="overflow-x-auto">
+                <table class="w-full">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Order ID</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Customer</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Items</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200" id="orders-list">
+                        <tr>
+                            <td colspan="7" class="px-6 py-8 text-center">
+                                <div class="loading-spinner inline-block w-8 h-8 border-4 border-pink-500 border-t-transparent rounded-full"></div>
+                                <p class="mt-2 text-gray-500">Loading orders...</p>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Order Details Modal -->
+    <div id="order-details-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 hidden">
+        <div class="modal-overlay fixed inset-0" id="modal-backdrop"></div>
+        <div class="bg-white rounded-xl shadow-xl w-full max-w-4xl max-h-[90vh] overflow-y-auto custom-scrollbar z-50 order-details-modal opacity-0 transform translate-y-10">
+            <div class="p-6 border-b border-gray-200">
+                <div class="flex justify-between items-center">
+                    <h3 class="text-xl font-bold">Order Details</h3>
+                    <button id="close-modal" class="text-gray-400 hover:text-gray-600">
+                        <i class="fas fa-times text-xl"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="p-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                    <div>
+                        <h4 class="font-bold text-gray-700 mb-2">Customer Information</h4>
+                        <div class="bg-gray-50 p-4 rounded-lg">
+                            <p class="text-sm" id="customer-name">-</p>
+                            <p class="text-sm text-gray-600 mt-1" id="customer-phone">-</p>
+                            <p class="text-sm text-gray-600 mt-1" id="customer-email">-</p>
+                        </div>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-gray-700 mb-2">Order Information</h4>
+                        <div class="bg-gray-50 p-4 rounded-lg">
+                            <div class="flex justify-between text-sm mb-1">
+                                <span class="text-gray-600">Order ID:</span>
+                                <span class="font-medium" id="order-id">-</span>
                             </div>
-                            <div class="p-6">
-                                <div class="flex justify-between items-start mb-2">
-                                    <h3 class="text-xl font-bold">Modern Architectural Design</h3>
-                                    <div class="flex items-center text-yellow">
-                                        <i class="fas fa-star"></i>
-                                        <span class="ml-1">4.9</span>
-                                    </div>
-                                </div>
-                                <p class="text-gray-400 text-sm mb-4">
-                                    Master the principles of contemporary architectural design with real-world projects.
-                                </p>
-                                <div class="flex justify-between items-center">
-                                    <div class="flex items-center text-sm text-gray-400">
-                                        <i class="far fa-clock mr-1"></i>
-                                        <span>32 hours</span>
-                                    </div>
-                                    <div class="text-yellow font-bold">
-                                        $199
-                                    </div>
-                                </div>
+                            <div class="flex justify-between text-sm mb-1">
+                                <span class="text-gray-600">Date:</span>
+                                <span class="font-medium" id="order-date">-</span>
+                            </div>
+                            <div class="flex justify-between text-sm mb-1">
+                                <span class="text-gray-600">Status:</span>
+                                <span class="font-medium" id="order-status">-</span>
+                            </div>
+                            <div class="flex justify-between text-sm">
+                                <span class="text-gray-600">Total:</span>
+                                <span class="font-medium" id="order-total">-</span>
                             </div>
                         </div>
-                        <div class="course-back glass-dark rounded-2xl p-6 absolute top-0 left-0 w-full h-full flex flex-col justify-between">
-                            <div>
-                                <h3 class="text-xl font-bold mb-4">Modern Architectural Design</h3>
-                                <p class="text-sm mb-4">What you'll learn:</p>
-                                <ul class="text-sm space-y-2 mb-6">
-                                    <li class="flex items-center">
-                                        <i class="fas fa-check text-yellow mr-2"></i>
-                                        Contemporary design principles
-                                    </li>
-                                    <li class="flex items-center">
-                                        <i class="fas fa-check text-yellow mr-2"></i>
-                                        Sustainable materials
-                                    </li>
-                                    <li class="flex items-center">
-                                        <i class="fas fa-check text-yellow mr-2"></i>
-                                        Digital modeling techniques
-                                    </li>
-                                    <li class="flex items-center">
-                                        <i class="fas fa-check text-yellow mr-2"></i>
-                                        Client presentation skills
-                                    </li>
-                                </ul>
-                            </div>
-                            <button class="bg-yellow text-black py-2 rounded-full font-semibold hover:bg-opacity-90 transition duration-300 w-full">
-                                Enroll Now
+                    </div>
+                </div>
+                
+                <h4 class="font-bold text-gray-700 mb-4">Order Items</h4>
+                <div class="bg-gray-50 rounded-lg overflow-hidden mb-6">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-100">
+                            <tr>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Product</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Price</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Quantity</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200" id="order-items-list">
+                            <!-- Order items will be populated here -->
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
+                    <div class="w-full md:w-auto">
+                        <h4 class="font-bold text-gray-700 mb-2">Update Status</h4>
+                        <div class="flex space-x-2">
+                            <select id="update-status" class="px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-pink-500">
+                                <option value="pending">Pending</option>
+                                <option value="approved">Approved</option>
+                                <option value="delivered">Delivered</option>
+                                <option value="cancelled">Cancelled</option>
+                            </select>
+                            <button id="update-status-btn" class="px-4 py-2 bg-pink-500 text-white rounded-lg hover:bg-pink-600 transition">
+                                Update
                             </button>
                         </div>
                     </div>
-                </div>
-                
-                <!-- Course 2 -->
-                <div class="course-card">
-                    <div class="course-inner h-full">
-                        <div class="course-front glass-dark rounded-2xl overflow-hidden h-full hover-scale">
-                            <div class="relative">
-                                <img src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80" alt="Sustainable Architecture" class="w-full h-48 object-cover">
-                                <div class="absolute top-4 right-4 bg-yellow text-black px-3 py-1 rounded-full text-sm font-bold">
-                                    NEW
-                                </div>
-                            </div>
-                            <div class="p-6">
-                                <div class="flex justify-between items-start mb-2">
-                                    <h3 class="text-xl font-bold">Sustainable Architecture</h3>
-                                    <div class="flex items-center text-yellow">
-                                        <i class="fas fa-star"></i>
-                                        <span class="ml-1">4.8</span>
-                                    </div>
-                                </div>
-                                <p class="text-gray-400 text-sm mb-4">
-                                    Learn to design eco-friendly buildings that reduce environmental impact.
-                                </p>
-                                <div class="flex justify-between items-center">
-                                    <div class="flex items-center text-sm text-gray-400">
-                                        <i class="far fa-clock mr-1"></i>
-                                        <span>28 hours</span>
-                                    </div>
-                                    <div class="text-yellow font-bold">
-                                        $179
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="course-back glass-dark rounded-2xl p-6 absolute top-0 left-0 w-full h-full flex flex-col justify-between">
-                            <div>
-                                <h3 class="text-xl font-bold mb-4">Sustainable Architecture</h3>
-                                <p class="text-sm mb-4">What you'll learn:</p>
-                                <ul class="text-sm space-y-2 mb-6">
-                                    <li class="flex items-center">
-                                        <i class="fas fa-check text-yellow mr-2"></i>
-                                        Green building materials
-                                    </li>
-                                    <li class="flex items-center">
-                                        <i class="fas fa-check text-yellow mr-2"></i>
-                                        Energy-efficient design
-                                    </li>
-                                    <li class="flex items-center">
-                                        <i class="fas fa-check text-yellow mr-2"></i>
-                                        LEED certification process
-                                    </li>
-                                    <li class="flex items-center">
-                                        <i class="fas fa-check text-yellow mr-2"></i>
-                                        Passive solar techniques
-                                    </li>
-                                </ul>
-                            </div>
-                            <button class="bg-yellow text-black py-2 rounded-full font-semibold hover:bg-opacity-90 transition duration-300 w-full">
-                                Enroll Now
-                            </button>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Course 3 -->
-                <div class="course-card">
-                    <div class="course-inner h-full">
-                        <div class="course-front glass-dark rounded-2xl overflow-hidden h-full hover-scale">
-                            <div class="relative">
-                                <img src="https://images.unsplash.com/photo-1487958449943-2429e8be8625?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80" alt="Urban Planning" class="w-full h-48 object-cover">
-                            </div>
-                            <div class="p-6">
-                                <div class="flex justify-between items-start mb-2">
-                                    <h3 class="text-xl font-bold">Urban Planning & Design</h3>
-                                    <div class="flex items-center text-yellow">
-                                        <i class="fas fa-star"></i>
-                                        <span class="ml-1">4.7</span>
-                                    </div>
-                                </div>
-                                <p class="text-gray-400 text-sm mb-4">
-                                    Create functional and beautiful urban spaces with comprehensive planning techniques.
-                                </p>
-                                <div class="flex justify-between items-center">
-                                    <div class="flex items-center text-sm text-gray-400">
-                                        <i class="far fa-clock mr-1"></i>
-                                        <span>40 hours</span>
-                                    </div>
-                                    <div class="text-yellow font-bold">
-                                        $249
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="course-back glass-dark rounded-2xl p-6 absolute top-0 left-0 w-full h-full flex flex-col justify-between">
-                            <div>
-                                <h3 class="text-xl font-bold mb-4">Urban Planning & Design</h3>
-                                <p class="text-sm mb-4">What you'll learn:</p>
-                                <ul class="text-sm space-y-2 mb-6">
-                                    <li class="flex items-center">
-                                        <i class="fas fa-check text-yellow mr-2"></i>
-                                        Zoning regulations
-                                    </li>
-                                    <li class="flex items-center">
-                                        <i class="fas fa-check text-yellow mr-2"></i>
-                                        Transportation planning
-                                    </li>
-                                    <li class="flex items-center">
-                                        <i class="fas fa-check text-yellow mr-2"></i>
-                                        Public space design
-                                    </li>
-                                    <li class="flex items-center">
-                                        <i class="fas fa-check text-yellow mr-2"></i>
-                                        Community engagement
-                                    </li>
-                                </ul>
-                            </div>
-                            <button class="bg-yellow text-black py-2 rounded-full font-semibold hover:bg-opacity-90 transition duration-300 w-full">
-                                Enroll Now
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="text-center mt-16">
-                <button class="glass-yellow border border-yellow px-8 py-3 rounded-full font-bold hover:bg-opacity-30 transition duration-300 hover-scale">
-                    View All Courses
-                </button>
-            </div>
-        </div>
-    </section>
-
-    <!-- About Zaki -->
-    <section id="about" class="py-20 relative overflow-hidden parallax" style="background-image: url('https://imagesixlib=rb-4.0.3&ixid=M3wxjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80');">
-        <div class="absolute inset-0 bg-black bg-opacity-70"></div>
-        <div class="container mx-auto px-6 relative z-10">
-            <div class="flex flex-col lg:flex-row items-center">
-                <div class="lg:w-1/2 mb-12 lg:mb-0 lg:pr-12">
-                    <div class="glass-dark p-8 rounded-2xl hover-scale">
-                        <h2 class="text-3xl md:text-5xl font-bold mb-6">
-                            MEET <span class="text-yellow">ZAKI</span>
-                        </h2>
-                        <p class="text-gray-300 mb-6">
-                            With over 15 years of experience in architectural design and education, Zaki has transformed the way students learn architecture. His innovative teaching methods have helped thousands of aspiring architects worldwide.
-                        </p>
-                        <div class="space-y-4 mb-8">
-                            <div class="flex items-start">
-                                <div class="bg-yellow bg-opacity-20 p-2 rounded-full mr-4">
-                                    <i class="fas fa-award text-yellow"></i>
-                                </div>
-                                <div>
-                                    <h4 class="font-bold">Award-Winning Architect</h4>
-                                    <p class="text-sm text-gray-400">Recipient of the Global Architecture Prize 2022</p>
-                                </div>
-                            </div>
-                            <div class="flex items-start">
-                                <div class="bg-yellow bg-opacity-20 p-2 rounded-full mr-4">
-                                    <i class="fas fa-chalkboard-teacher text-yellow"></i>
-                                </div>
-                                <div>
-                                    <h4 class="font-bold">Master Educator</h4>
-                                    <p class="text-sm text-gray-400">10+ years teaching at top architecture schools</p>
-                                </div>
-                            </div>
-                            <div class="flex items-start">
-                                <div class="bg-yellow bg-opacity-20 p-2 rounded-full mr-4">
-                                    <i class="fas fa-building text-yellow"></i>
-                                </div>
-                                <div>
-                                    <h4 class="font-bold">Industry Leader</h4>
-                                    <p class="text-sm text-gray-400">Founder of Zaki Architects, a global design firm</p>
-                                </div>
-                            </div>
-                        </div>
-                        <button class="bg-yellow text-black px-6 py-3 rounded-full font-bold hover:bg-opacity-90 transition duration-300">
-                            Learn More About Zaki
-                        </button>
-                    </div>
-                </div>
-                
-                <div class="lg:w-1/2 relative">
-                    <div class="glass-dark p-2 rounded-2xl inline-block">
-                        <img src="zaki.jpeg" alt="Zaki" class="rounded-xl w-full max-w-md mx-auto">
-                    </div>
-                    <div class="absolute -bottom-10 -left-10 w-32 h-32 bg-yellow rounded-full flex items-center justify-center opacity-20 floating">
-                        <i class="fas fa-drafting-compass text-4xl"></i>
-                    </div>
-                    <div class="absolute -top-10 -right-10 w-24 h-24 bg-yellow rounded-full flex items-center justify-center opacity-20 floating" style="animation-delay: 0.5s;">
-                        <i class="fas fa-ruler-combined text-3xl"></i>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Why Choose Us -->
-    <section class="py-20 relative overflow-hidden">
-        <div class="absolute inset-0 grid-pattern"></div>
-        <div class="container mx-auto px-6 relative">
-            <div class="text-center mb-16">
-                <h2 class="text-3xl md:text-5xl font-bold mb-4">
-                    WHY <span class="text-yellow">CHOOSE US</span>
-                </h2>
-                <p class="text-gray-400 max-w-2xl mx-auto">
-                    Discover what makes Zaki Architect the premier choice for architectural education.
-                </p>
-            </div>
-            
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <div class="glass-dark p-8 rounded-2xl hover-scale">
-                    <div class="w-16 h-16 bg-yellow bg-opacity-20 rounded-full flex items-center justify-center mb-6">
-                        <i class="fas fa-video text-yellow text-2xl"></i>
-                    </div>
-                    <h3 class="text-xl font-bold mb-4">Interactive Learning</h3>
-                    <p class="text-gray-400">
-                        Engage with high-quality video lessons, 3D models, and interactive exercises that bring architectural concepts to life.
-                    </p>
-                </div>
-                
-                <div class="glass-dark p-8 rounded-2xl hover-scale">
-                    <div class="w-16 h-16 bg-yellow bg-opacity-20 rounded-full flex items-center justify-center mb-6">
-                        <i class="fas fa-briefcase text-yellow text-2xl"></i>
-                    </div>
-                    <h3 class="text-xl font-bold mb-4">Real-World Projects</h3>
-                    <p class="text-gray-400">
-                        Work on actual architectural projects with feedback from industry professionals to build your portfolio.
-                    </p>
-                </div>
-                
-                <div class="glass-dark p-8 rounded-2xl hover-scale">
-                    <div class="w-16 h-16 bg-yellow bg-opacity-20 rounded-full flex items-center justify-center mb-6">
-                        <i class="fas fa-users text-yellow text-2xl"></i>
-                    </div>
-                    <h3 class="text-xl font-bold mb-4">Community Support</h3>
-                    <p class="text-gray-400">
-                        Join a global community of architects and students for networking, collaboration, and peer support.
-                    </p>
-                </div>
-                
-                <div class="glass-dark p-8 rounded-2xl hover-scale">
-                    <div class="w-16 h-16 bg-yellow bg-opacity-20 rounded-full flex items-center justify-center mb-6">
-                        <i class="fas fa-certificate text-yellow text-2xl"></i>
-                    </div>
-                    <h3 class="text-xl font-bold mb-4">Industry-Recognized Certificates</h3>
-                    <p class="text-gray-400">
-                        Earn certificates that are respected by architectural firms and institutions worldwide.
-                    </p>
-                </div>
-                
-                <div class="glass-dark p-8 rounded-2xl hover-scale">
-                    <div class="w-16 h-16 bg-yellow bg-opacity-20 rounded-full flex items-center justify-center mb-6">
-                        <i class="fas fa-laptop-code text-yellow text-2xl"></i>
-                    </div>
-                    <h3 class="text-xl font-bold mb-4">Cutting-Edge Tools</h3>
-                    <p class="text-gray-400">
-                        Learn using the latest architectural software and technologies used by professionals.
-                    </p>
-                </div>
-                
-                <div class="glass-dark p-8 rounded-2xl hover-scale">
-                    <div class="w-16 h-16 bg-yellow bg-opacity-20 rounded-full flex items-center justify-center mb-6">
-                        <i class="fas fa-clock text-yellow text-2xl"></i>
-                    </div>
-                    <h3 class="text-xl font-bold mb-4">Flexible Schedule</h3>
-                    <p class="text-gray-400">
-                        Learn at your own pace with 24/7 access to course materials from anywhere in the world.
-                    </p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Testimonials -->
-    <section id="testimonials" class="py-20 relative overflow-hidden parallax" style="background-image: url('https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80');">
-        <div class="absolute inset-0 bg-black bg-opacity-70"></div>
-        <div class="container mx-auto px-6 relative z-10">
-            <div class="text-center mb-16">
-                <h2 class="text-3xl md:text-5xl font-bold mb-4">
-                    WHAT OUR <span class="text-yellow">STUDENTS SAY</span>
-                </h2>
-                <p class="text-gray-400 max-w-2xl mx-auto">
-                    Hear from architects who transformed their careers with our courses.
-                </p>
-            </div>
-            
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <div class="glass-dark p-8 rounded-2xl hover-scale">
-                    <div class="flex items-center mb-6">
-                        <img src="asma.jpeg" alt="Student" class="w-16 h-16 rounded-full object-cover mr-4">
-                        <div>
-                            <h4 class="font-bold">Sarah abdi</h4>
-                            <p class="text-sm text-yellow">Architect at DesignWorks</p>
-                        </div>
-                    </div>
-                    <div class="flex mb-4 text-yellow">
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                    </div>
-                    <p class="text-gray-300">
-                        "Zaki's Modern Architectural Design course completely changed my approach to projects. I landed my dream job just two months after completing the course!"
-                    </p>
-                </div>
-                
-                <div class="glass-dark p-8 rounded-2xl hover-scale">
-                    <div class="flex items-center mb-6">
-                        <img src="zack.jpeg" alt="Student" class="w-16 h-16 rounded-full object-cover mr-4">
-                        <div>
-                            <h4 class="font-bold">Mohamed J</h4>
-                            <p class="text-sm text-yellow">Urban Planner</p>
-                        </div>
-                    </div>
-                    <div class="flex mb-4 text-yellow">
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                    </div>
-                    <p class="text-gray-300">
-                        "The Urban Planning course gave me practical skills I use every day. The community projects were especially valuable for my current role."
-                    </p>
-                </div>
-                
-                <div class="glass-dark p-8 rounded-2xl hover-scale">
-                    <div class="flex items-center mb-6">
-                        <img src="umayma.jpeg" alt="Student" class="w-16 h-16 rounded-full object-cover mr-4">
-                        <div>
-                            <h4 class="font-bold">Aisha Mohammed</h4>
-                            <p class="text-sm text-yellow">Sustainable Design Specialist</p>
-                        </div>
-                    </div>
-                    <div class="flex mb-4 text-yellow">
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                    </div>
-                    <p class="text-gray-300">
-                        "I've taken many online courses, but Zaki's teaching style is unmatched. The Sustainable Architecture course helped me specialize in an emerging field."
-                    </p>
-                </div>
-            </div>
-            
-            <div class="mt-16 flex justify-center">
-                <div class="flex space-x-2">
-                    <button class="w-3 h-3 bg-yellow rounded-full"></button>
-                    <button class="w-3 h-3 bg-gray-600 rounded-full"></button>
-                    <button class="w-3 h-3 bg-gray-600 rounded-full"></button>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- CTA Section -->
-    <section class="py-20 relative overflow-hidden">
-        <div class="absolute inset-0 grid-pattern"></div>
-        <div class="container mx-auto px-6 relative">
-            <div class="glass-dark rounded-2xl p-12 text-center max-w-4xl mx-auto">
-                <h2 class="text-3xl md:text-5xl font-bold mb-6">
-                    READY TO <span class="text-yellow">TRANSFORM</span> YOUR CAREER?
-                </h2>
-                <p class="text-xl text-gray-300 mb-8">
-                    Join thousands of architects who've accelerated their careers with Zaki Architect.
-                </p>
-                <button class="bg-yellow text-black px-8 py-4 rounded-full font-bold text-lg hover:bg-opacity-90 transition duration-300 hover-scale pulse">
-                    Start Learning Today
-                </button>
-            </div>
-        </div>
-    </section>
-
-    <!-- Contact Section -->
-    <section id="contact" class="py-20 relative overflow-hidden">
-        <div class="container mx-auto px-6">
-            <div class="flex flex-col lg:flex-row">
-                <div class="lg:w-1/2 mb-12 lg:mb-0 lg:pr-12">
-                    <h2 class="text-3xl md:text-5xl font-bold mb-6">
-                        GET IN <span class="text-yellow">TOUCH</span>
-                    </h2>
-                    <p class="text-gray-400 mb-8">
-                        Have questions about our courses or need guidance on which program is right for you? Our team is here to help.
-                    </p>
-                    
-                    <div class="space-y-6">
-                        <div class="flex items-start">
-                            <div class="bg-yellow bg-opacity-20 p-3 rounded-full mr-4">
-                                <i class="fas fa-envelope text-yellow"></i>
-                            </div>
-                            <div>
-                                <h4 class="font-bold">Email Us</h4>
-                                <p class="text-gray-400">hello@zakiarchitect.com</p>
-                            </div>
-                        </div>
-                        
-                        <div class="flex items-start">
-                            <div class="bg-yellow bg-opacity-20 p-3 rounded-full mr-4">
-                                <i class="fas fa-phone-alt text-yellow"></i>
-                            </div>
-                            <div>
-                                <h4 class="font-bold">Call Us</h4>
-                                <p class="text-gray-400">+252 63 6390524</p>
-                            </div>
-                        </div>
-                        
-                        <div class="flex items-start">
-                            <div class="bg-yellow bg-opacity-20 p-3 rounded-full mr-4">
-                                <i class="fas fa-map-marker-alt text-yellow"></i>
-                            </div>
-                            <div>
-                                <h4 class="font-bold">Visit Us</h4>
-                                <p class="text-gray-400">Design street </p>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="mt-8 flex space-x-4">
-                        <a href="#" class="w-10 h-10 glass-dark rounded-full flex items-center justify-center hover:bg-yellow hover:bg-opacity-20 transition duration-300">
-                            <i class="fab fa-facebook-f"></i>
-                        </a>
-                        <a href="#" class="w-10 h-10 glass-dark rounded-full flex items-center justify-center hover:bg-yellow hover:bg-opacity-20 transition duration-300">
-                            <i class="fab fa-twitter"></i>
-                        </a>
-                        <a href="#" class="w-10 h-10 glass-dark rounded-full flex items-center justify-center hover:bg-yellow hover:bg-opacity-20 transition duration-300">
-                            <i class="fab fa-instagram"></i>
-                        </a>
-                        <a href="#" class="w-10 h-10 glass-dark rounded-full flex items-center justify-center hover:bg-yellow hover:bg-opacity-20 transition duration-300">
-                            <i class="fab fa-linkedin-in"></i>
-                        </a>
-                    </div>
-                </div>
-                
-                <div class="lg:w-1/2">
-                    <div class="glass-dark p-8 rounded-2xl">
-                        <h3 class="text-2xl font-bold mb-6">Send Us a Message</h3>
-                        <form>
-                            <div class="mb-6">
-                                <label for="name" class="block text-sm font-medium mb-2">Your Name</label>
-                                <input type="text" id="name" class="w-full bg-gray-900 bg-opacity-50 border border-gray-700 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-yellow focus:border-transparent" placeholder="jama A">
-                            </div>
-                            <div class="mb-6">
-                                <label for="email" class="block text-sm font-medium mb-2">Email Address</label>
-                                <input type="email" id="email" class="w-full bg-gray-900 bg-opacity-50 border border-gray-700 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-yellow focus:border-transparent" placeholder="jama@example.com">
-                            </div>
-                            <div class="mb-6">
-                                <label for="subject" class="block text-sm font-medium mb-2">Subject</label>
-                                <input type="text" id="subject" class="w-full bg-gray-900 bg-opacity-50 border border-gray-700 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-yellow focus:border-transparent" placeholder="Course Inquiry">
-                            </div>
-                            <div class="mb-6">
-                                <label for="message" class="block text-sm font-medium mb-2">Message</label>
-                                <textarea id="message" rows="4" class="w-full bg-gray-900 bg-opacity-50 border border-gray-700 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-yellow focus:border-transparent" placeholder="Your message here..."></textarea>
-                            </div>
-                            <button type="submit" class="bg-yellow text-black px-6 py-3 rounded-full font-bold hover:bg-opacity-90 transition duration-300 w-full">
-                                Send Message
-                            </button>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Newsletter -->
-    <section class="py-16 bg-black bg-opacity-50">
-        <div class="container mx-auto px-6">
-            <div class="glass-dark rounded-2xl p-8 md:p-12 text-center max-w-4xl mx-auto">
-                <h3 class="text-2xl md:text-3xl font-bold mb-4">Stay Updated</h3>
-                <p class="text-gray-400 mb-8 max-w-2xl mx-auto">
-                    Subscribe to our newsletter for the latest course updates, architectural insights, and exclusive offers.
-                </p>
-                <div class="flex flex-col md:flex-row max-w-md mx-auto">
-                    <input type="email" placeholder="Your email address" class="bg-gray-900 bg-opacity-50 border border-gray-700 rounded-full px-6 py-3 focus:outline-none focus:ring-2 focus:ring-yellow focus:border-transparent mb-4 md:mb-0 md:mr-4 flex-grow">
-                    <button class="bg-yellow text-black px-6 py-3 rounded-full font-bold hover:bg-opacity-90 transition duration-300 whitespace-nowrap">
-                        Subscribe
+                    <button id="whatsapp-btn" class="px-4 py-2 whatsapp-btn text-white rounded-lg flex items-center space-x-2">
+                        <i class="fab fa-whatsapp"></i>
+                        <span>Send WhatsApp Message</span>
                     </button>
                 </div>
             </div>
         </div>
-    </section>
-
-    <!-- Footer -->
-    <footer class="py-12 bg-black bg-opacity-80">
-        <div class="container mx-auto px-6">
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
-                <div>
-                    <div class="flex items-center mb-4">
-                        <div class="w-10 h-10 bg-yellow rounded-full flex items-center justify-center mr-3">
-                            <i class="fas fa-drafting-compass text-black text-xl"></i>
-                        </div>
-                        <h1 class="text-xl font-bold text-yellow">ZAKI<span class="text-white">ARCHITECT</span></h1>
-                    </div>
-                    <p class="text-gray-400 text-sm">
-                        Transforming architectural education through innovative online learning experiences.
-                    </p>
-                </div>
-                
-                <div>
-                    <h4 class="text-lg font-bold mb-4">Quick Links</h4>
-                    <ul class="space-y-2">
-                        <li><a href="#" class="text-gray-400 hover:text-yellow transition duration-300 text-sm">Home</a></li>
-                        <li><a href="#" class="text-gray-400 hover:text-yellow transition duration-300 text-sm">Courses</a></li>
-                        <li><a href="#" class="text-gray-400 hover:text-yellow transition duration-300 text-sm">About</a></li>
-                        <li><a href="#" class="text-gray-400 hover:text-yellow transition duration-300 text-sm">Testimonials</a></li>
-                        <li><a href="#" class="text-gray-400 hover:text-yellow transition duration-300 text-sm">Contact</a></li>
-                    </ul>
-                </div>
-                
-                <div>
-                    <h4 class="text-lg font-bold mb-4">Courses</h4>
-                    <ul class="space-y-2">
-                        <li><a href="#" class="text-gray-400 hover:text-yellow transition duration-300 text-sm">Modern Design</a></li>
-                        <li><a href="#" class="text-gray-400 hover:text-yellow transition duration-300 text-sm">Sustainable Architecture</a></li>
-                        <li><a href="#" class="text-gray-400 hover:text-yellow transition duration-300 text-sm">Urban Planning</a></li>
-                        <li><a href="#" class="text-gray-400 hover:text-yellow transition duration-300 text-sm">Interior Design</a></li>
-                        <li><a href="#" class="text-gray-400 hover:text-yellow transition duration-300 text-sm">All Courses</a></li>
-                    </ul>
-                </div>
-                
-                <div>
-                    <h4 class="text-lg font-bold mb-4">Legal</h4>
-                    <ul class="space-y-2">
-                        <li><a href="#" class="text-gray-400 hover:text-yellow transition duration-300 text-sm">Terms of Service</a></li>
-                        <li><a href="#" class="text-gray-400 hover:text-yellow transition duration-300 text-sm">Privacy Policy</a></li>
-                        <li><a href="#" class="text-gray-400 hover:text-yellow transition duration-300 text-sm">Refund Policy</a></li>
-                        <li><a href="#" class="text-gray-400 hover:text-yellow transition duration-300 text-sm">Cookie Policy</a></li>
-                    </ul>
-                </div>
-            </div>
-            
-            <div class="border-t border-gray-800 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center">
-                <p class="text-gray-500 text-sm mb-4 md:mb-0">
-                    © 2025 Zaki Architect. All rights reserved.
-                </p>
-                <div class="flex space-x-6">
-                    <a href="#" class="text-gray-500 hover:text-yellow transition duration-300">
-                        <i class="fab fa-facebook-f"></i>
-                    </a>
-                    <a href="#" class="text-gray-500 hover:text-yellow transition duration-300">
-                        <i class="fab fa-twitter"></i>
-                    </a>
-                    <a href="#" class="text-gray-500 hover:text-yellow transition duration-300">
-                        <i class="fab fa-instagram"></i>
-                    </a>
-                    <a href="#" class="text-gray-500 hover:text-yellow transition duration-300">
-                        <i class="fab fa-linkedin-in"></i>
-                    </a>
-                    <a href="#" class="text-gray-500 hover:text-yellow transition duration-300">
-                        <i class="fab fa-youtube"></i>
-                    </a>
-                </div>
-            </div>
-        </div>
-    </footer>
-
-    <!-- Back to Top -->
-    <a href="#home" class="fixed bottom-8 right-8 w-12 h-12 bg-yellow rounded-full flex items-center justify-center text-black shadow-lg hover:bg-opacity-90 transition duration-300 z-40">
-        <i class="fas fa-arrow-up"></i>
-    </a>
-
+    </div>
+    
     <script>
-
-
-        // Mobile menu toggle
-        const menuToggle = document.getElementById('menu-toggle');
-        const mobileMenu = document.getElementById('mobile-menu');
-        
-        menuToggle.addEventListener('click', function() {
-            mobileMenu.classList.toggle('hidden');
-        });
-
-        // GSAP Animations
-        gsap.registerPlugin(ScrollTrigger);
-        
-        // Animate elements on scroll
-        gsap.utils.toArray('.hover-scale').forEach(element => {
-            gsap.from(element, {
-                scrollTrigger: {
-                    trigger: element,
-                    start: "top 80%",
-                    toggleActions: "play none none none"
-                },
-                opacity: 0,
-                y: 50,
-                duration: 0.8,
-                ease: "power2.out"
-            });
-        });
-
-        // Parallax effects
-        gsap.utils.toArray('.parallax').forEach(section => {
-            const image = section.querySelector('img');
-            if (image) {
-                gsap.to(image, {
-                    yPercent: 20,
-                    ease: "none",
-                    scrollTrigger: {
-                        trigger: section,
-                        start: "top bottom",
-                        end: "bottom top",
-                        scrub: true
-                    }
-                });
-            }
-        });
-
-        // Course card hover effect
-        document.querySelectorAll('.course-card').forEach(card => {
-            card.addEventListener('mouseenter', function() {
-                gsap.to(this.querySelector('.course-inner'), {
-                    duration: 0.5,
-                    ease: "power2.out"
-                });
+        document.addEventListener('DOMContentLoaded', () => {
+            // Initialize variables
+            let orders = [];
+            let currentOrder = null;
+            
+            // Load orders from Firebase
+            loadOrdersFromFirebase();
+            
+            // Mobile menu toggle
+            const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+            const mobileMenu = document.getElementById('mobile-menu');
+            const closeMenu = document.getElementById('close-menu');
+            
+            mobileMenuBtn.addEventListener('click', () => {
+                mobileMenu.classList.remove('hidden');
+                document.body.style.overflow = 'hidden';
             });
             
-            card.addEventListener('mouseleave', function() {
-                gsap.to(this.querySelector('.course-inner'), {
-                    duration: 0.5,
-                    ease: "power2.out"
-                });
+            closeMenu.addEventListener('click', () => {
+                mobileMenu.classList.add('hidden');
+                document.body.style.overflow = '';
             });
-        });
-
-        // Smooth scrolling for anchor links
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function(e) {
-                e.preventDefault();
-                
-                const targetId = this.getAttribute('href');
-                const targetElement = document.querySelector(targetId);
-                
-                if (targetElement) {
-                    window.scrollTo({
-                        top: targetElement.offsetTop - 80,
-                        behavior: 'smooth'
-                    });
-                    
-                    // Close mobile menu if open
-                    if (!mobileMenu.classList.contains('hidden')) {
-                        mobileMenu.classList.add('hidden');
-                    }
+            
+            // Order details modal
+            const orderModal = document.getElementById('order-details-modal');
+            const modalBackdrop = document.getElementById('modal-backdrop');
+            const closeModal = document.getElementById('close-modal');
+            
+            function openOrderModal(order) {
+                currentOrder = order;
+                populateOrderDetails(order);
+                document.getElementById('update-status').value = order.status;
+                orderModal.classList.remove('hidden');
+                setTimeout(() => {
+                    document.querySelector('.order-details-modal').classList.add('show');
+                }, 10);
+                document.body.style.overflow = 'hidden';
+            }
+            
+            function closeOrderModal() {
+                document.querySelector('.order-details-modal').classList.remove('show');
+                setTimeout(() => {
+                    orderModal.classList.add('hidden');
+                }, 300);
+                document.body.style.overflow = '';
+            }
+            
+            modalBackdrop.addEventListener('click', closeOrderModal);
+            closeModal.addEventListener('click', closeOrderModal);
+            
+            // Update status functionality
+            document.getElementById('update-status-btn').addEventListener('click', () => {
+                const newStatus = document.getElementById('update-status').value;
+                updateOrderStatus(currentOrder.id, newStatus);
+            });
+            
+            // WhatsApp message functionality
+            document.getElementById('whatsapp-btn').addEventListener('click', () => {
+                if (currentOrder) {
+                    sendWhatsAppMessage(currentOrder);
                 }
             });
-        });
-
-        // Scroll to top button visibility
-        window.addEventListener('scroll', function() {
-            const backToTop = document.querySelector('a[href="#home"]');
-            if (window.scrollY > 300) {
-                backToTop.style.opacity = '1';
-                backToTop.style.visibility = 'visible';
-            } else {
-                backToTop.style.opacity = '0';
-                backToTop.style.visibility = 'hidden';
+            
+            // Filter orders
+            document.getElementById('status-filter').addEventListener('change', filterOrders);
+            document.getElementById('search-orders').addEventListener('input', filterOrders);
+            
+            async function loadOrdersFromFirebase() {
+                const ordersList = document.getElementById('orders-list');
+                
+                try {
+                    // Get orders from Firestore
+                    const querySnapshot = await db.collection('orders').orderBy('createdAt', 'desc').get();
+                    
+                    if (querySnapshot.empty) {
+                        ordersList.innerHTML = `
+                            <tr>
+                                <td colspan="7" class="px-6 py-8 text-center">
+                                    <i class="fas fa-box-open text-4xl text-pink-300 mb-4"></i>
+                                    <p class="text-gray-500">No orders found</p>
+                                </td>
+                            </tr>
+                        `;
+                        return;
+                    }
+                    
+                    // Clear loading state
+                    ordersList.innerHTML = '';
+                    
+                    // Process each order
+                    orders = [];
+                    let stats = {
+                        total: 0,
+                        pending: 0,
+                        approved: 0,
+                        delivered: 0,
+                        cancelled: 0
+                    };
+                    
+                    querySnapshot.forEach((doc) => {
+                        const order = {
+                            id: doc.id,
+                            ...doc.data()
+                        };
+                        
+                        orders.push(order);
+                        
+                        // Update stats
+                        stats.total++;
+                        if (order.status) {
+                            stats[order.status]++;
+                        } else {
+                            stats.pending++; // Default status
+                        }
+                        
+                        // Format date
+                        const orderDate = order.createdAt ? order.createdAt.toDate() : new Date();
+                        const formattedDate = orderDate.toLocaleDateString('en-US', {
+                            year: 'numeric',
+                            month: 'short',
+                            day: 'numeric'
+                        });
+                        
+                        // Get status badge class
+                        let statusClass = 'status-pending';
+                        let statusText = 'Pending';
+                        
+                        if (order.status === 'approved') {
+                            statusClass = 'status-approved';
+                            statusText = 'Approved';
+                        } else if (order.status === 'delivered') {
+                            statusClass = 'status-delivered';
+                            statusText = 'Delivered';
+                        } else if (order.status === 'cancelled') {
+                            statusClass = 'status-cancelled';
+                            statusText = 'Cancelled';
+                        }
+                        
+                        // Count total items
+                        const totalItems = order.items ? order.items.reduce((total, item) => total + item.quantity, 0) : 0;
+                        
+                        // Create order row
+                        const orderRow = document.createElement('tr');
+                        orderRow.className = 'order-card cursor-pointer hover:bg-gray-50';
+                        orderRow.innerHTML = `
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="text-sm font-medium text-gray-900">#${order.id.substring(0, 8)}</div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="text-sm text-gray-900">${order.customerName || 'Unknown Customer'}</div>
+                                <div class="text-sm text-gray-500">${order.phoneNumber || 'No phone'}</div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="text-sm text-gray-900">${formattedDate}</div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="text-sm text-gray-900">${totalItems} items</div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="text-sm font-medium text-gray-900">$${order.total ? order.total.toFixed(2) : '0.00'}</div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span class="status-badge ${statusClass}">${statusText}</span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                <button class="text-pink-500 hover:text-pink-700 view-order-btn" data-id="${order.id}">
+                                    <i class="fas fa-eye mr-1"></i> View
+                                </button>
+                            </td>
+                        `;
+                        
+                        ordersList.appendChild(orderRow);
+                    });
+                    
+                    // Update statistics
+                    document.getElementById('total-orders').textContent = stats.total;
+                    document.getElementById('pending-orders').textContent = stats.pending;
+                    document.getElementById('approved-orders').textContent = stats.approved;
+                    document.getElementById('delivered-orders').textContent = stats.delivered;
+                    
+                    // Add event listeners to view buttons
+                    document.querySelectorAll('.view-order-btn').forEach(btn => {
+                        btn.addEventListener('click', (e) => {
+                            e.stopPropagation();
+                            const orderId = btn.getAttribute('data-id');
+                            const order = orders.find(o => o.id === orderId);
+                            if (order) {
+                                openOrderModal(order);
+                            }
+                        });
+                    });
+                    
+                    // Add event listener to entire row
+                    document.querySelectorAll('tr.order-card').forEach((row, index) => {
+                        row.addEventListener('click', () => {
+                            openOrderModal(orders[index]);
+                        });
+                    });
+                    
+                } catch (error) {
+                    console.error("Error loading orders: ", error);
+                    ordersList.innerHTML = `
+                        <tr>
+                            <td colspan="7" class="px-6 py-8 text-center">
+                                <i class="fas fa-exclamation-triangle text-4xl text-pink-500 mb-4"></i>
+                                <p class="text-gray-500">Failed to load orders. Please try again.</p>
+                            </td>
+                        </tr>
+                    `;
+                }
+            }
+            
+            function populateOrderDetails(order) {
+                // Format date
+                const orderDate = order.createdAt ? order.createdAt.toDate() : new Date();
+                const formattedDate = orderDate.toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+                
+                // Get status badge class
+                let statusClass = 'status-pending';
+                let statusText = 'Pending';
+                
+                if (order.status === 'approved') {
+                    statusClass = 'status-approved';
+                    statusText = 'Approved';
+                } else if (order.status === 'delivered') {
+                    statusClass = 'status-delivered';
+                    statusText = 'Delivered';
+                } else if (order.status === 'cancelled') {
+                    statusClass = 'status-cancelled';
+                    statusText = 'Cancelled';
+                }
+                
+                // Populate customer info
+                document.getElementById('customer-name').textContent = order.customerName || 'Unknown Customer';
+                document.getElementById('customer-phone').textContent = order.phoneNumber || 'No phone number provided';
+                document.getElementById('customer-email').textContent = order.email || 'No email provided';
+                
+                // Populate order info
+                document.getElementById('order-id').textContent = `#${order.id.substring(0, 8)}`;
+                document.getElementById('order-date').textContent = formattedDate;
+                document.getElementById('order-status').innerHTML = `<span class="status-badge ${statusClass}">${statusText}</span>`;
+                document.getElementById('order-total').textContent = `$${order.total ? order.total.toFixed(2) : '0.00'}`;
+                
+                // Populate order items
+                const orderItemsList = document.getElementById('order-items-list');
+                orderItemsList.innerHTML = '';
+                
+                if (order.items && order.items.length > 0) {
+                    order.items.forEach(item => {
+                        const itemRow = document.createElement('tr');
+                        itemRow.innerHTML = `
+                            <td class="px-4 py-3 whitespace-nowrap">
+                                <div class="flex items-center">
+                                    <div class="flex-shrink-0 h-10 w-10 mr-3">
+                                        <img class="h-10 w-10 rounded-md object-cover" src="${item.image || 'https://via.placeholder.com/100?text=No+Image'}" alt="${item.name}">
+                                    </div>
+                                    <div class="text-sm font-medium text-gray-900">${item.name}</div>
+                                </div>
+                            </td>
+                            <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">$${item.price.toFixed(2)}</td>
+                            <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">${item.quantity}</td>
+                            <td class="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900">$${(item.price * item.quantity).toFixed(2)}</td>
+                        `;
+                        orderItemsList.appendChild(itemRow);
+                    });
+                } else {
+                    orderItemsList.innerHTML = `
+                        <tr>
+                            <td colspan="4" class="px-4 py-4 text-center text-sm text-gray-500">
+                                No items found in this order
+                            </td>
+                        </tr>
+                    `;
+                }
+            }
+            
+            async function updateOrderStatus(orderId, newStatus) {
+                try {
+                    // Update order in Firestore
+                    await db.collection('orders').doc(orderId).update({
+                        status: newStatus,
+                        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+                    
+                    // If status is approved, send WhatsApp message
+                    if (newStatus === 'approved') {
+                        const order = orders.find(o => o.id === orderId);
+                        if (order) {
+                            sendWhatsAppMessage(order);
+                        }
+                    }
+                    
+                    // Show success message
+                    alert(`Order status updated to ${newStatus}`);
+                    
+                    // Reload orders to reflect changes
+                    loadOrdersFromFirebase();
+                    
+                    // Close modal
+                    closeOrderModal();
+                    
+                } catch (error) {
+                    console.error("Error updating order status: ", error);
+                    alert('Failed to update order status. Please try again.');
+                }
+            }
+            
+            function sendWhatsAppMessage(order) {
+                if (!order.phoneNumber) {
+                    alert('No phone number available for this customer.');
+                    return;
+                }
+                
+                // Format phone number (remove any non-digit characters)
+                const phone = order.phoneNumber.replace(/\D/g, '');
+                
+                // Create message
+                const message = `Hello ${order.customerName || 'Valued Customer'}! Your order #${order.id.substring(0, 8)} has been approved and is being prepared for delivery. Please share your location by clicking this link: https://maps.google.com/?q=Your+Location. This will help us deliver your order faster. Thank you for shopping with Miimi!`;
+                
+                // Encode message for URL
+                const encodedMessage = encodeURIComponent(message);
+                
+                // Create WhatsApp URL
+                const whatsappUrl = `https://wa.me/${phone}?text=${encodedMessage}`;
+                
+                // Open WhatsApp in a new tab
+                window.open(whatsappUrl, '_blank');
+            }
+            
+            function filterOrders() {
+                const statusFilter = document.getElementById('status-filter').value;
+                const searchTerm = document.getElementById('search-orders').value.toLowerCase();
+                
+                const ordersList = document.getElementById('orders-list');
+                ordersList.innerHTML = '';
+                
+                const filteredOrders = orders.filter(order => {
+                    // Filter by status
+                    const statusMatch = statusFilter === 'all' || order.status === statusFilter;
+                    
+                    // Filter by search term
+                    const searchMatch = 
+                        (order.customerName && order.customerName.toLowerCase().includes(searchTerm)) ||
+                        (order.phoneNumber && order.phoneNumber.toLowerCase().includes(searchTerm)) ||
+                        (order.id && order.id.toLowerCase().includes(searchTerm));
+                    
+                    return statusMatch && (searchTerm === '' || searchMatch);
+                });
+                
+                if (filteredOrders.length === 0) {
+                    ordersList.innerHTML = `
+                        <tr>
+                            <td colspan="7" class="px-6 py-8 text-center">
+                                <i class="fas fa-search text-4xl text-pink-300 mb-4"></i>
+                                <p class="text-gray-500">No orders match your filters</p>
+                            </td>
+                        </tr>
+                    `;
+                    return;
+                }
+                
+                // Display filtered orders
+                filteredOrders.forEach(order => {
+                    // Format date
+                    const orderDate = order.createdAt ? order.createdAt.toDate() : new Date();
+                    const formattedDate = orderDate.toLocaleDateString('en-US', {
+                        year: 'numeric',
+                        month: 'short',
+                        day: 'numeric'
+                    });
+                    
+                    // Get status badge class
+                    let statusClass = 'status-pending';
+                    let statusText = 'Pending';
+                    
+                    if (order.status === 'approved') {
+                        statusClass = 'status-approved';
+                        statusText = 'Approved';
+                    } else if (order.status === 'delivered') {
+                        statusClass = 'status-delivered';
+                        statusText = 'Delivered';
+                    } else if (order.status === 'cancelled') {
+                        statusClass = 'status-cancelled';
+                        statusText = 'Cancelled';
+                    }
+                    
+                    // Count total items
+                    const totalItems = order.items ? order.items.reduce((total, item) => total + item.quantity, 0) : 0;
+                    
+                    // Create order row
+                    const orderRow = document.createElement('tr');
+                    orderRow.className = 'order-card cursor-pointer hover:bg-gray-50';
+                    orderRow.innerHTML = `
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm font-medium text-gray-900">#${order.id.substring(0, 8)}</div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm text-gray-900">${order.customerName || 'Unknown Customer'}</div>
+                            <div class="text-sm text-gray-500">${order.phoneNumber || 'No phone'}</div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm text-gray-900">${formattedDate}</div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm text-gray-900">${totalItems} items</div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm font-medium text-gray-900">$${order.total ? order.total.toFixed(2) : '0.00'}</div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <span class="status-badge ${statusClass}">${statusText}</span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            <button class="text-pink-500 hover:text-pink-700 view-order-btn" data-id="${order.id}">
+                                <i class="fas fa-eye mr-1"></i> View
+                            </button>
+                        </td>
+                    `;
+                    
+                    ordersList.appendChild(orderRow);
+                });
+                
+                // Add event listeners to view buttons
+                document.querySelectorAll('.view-order-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        const orderId = btn.getAttribute('data-id');
+                        const order = orders.find(o => o.id === orderId);
+                        if (order) {
+                            openOrderModal(order);
+                        }
+                    });
+                });
+                
+                // Add event listener to entire row
+                document.querySelectorAll('tr.order-card').forEach((row, index) => {
+                    row.addEventListener('click', () => {
+                        const orderId = row.querySelector('.view-order-btn').getAttribute('data-id');
+                        const order = orders.find(o => o.id === orderId);
+                        if (order) {
+                            openOrderModal(order);
+                        }
+                    });
+                });
             }
         });
     </script>
